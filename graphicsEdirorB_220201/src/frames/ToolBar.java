@@ -35,7 +35,7 @@ public class ToolBar extends JToolBar {
 	
 	public void associate(DrawingPanel drawingPanel) {
 		this.drawingPanel = drawingPanel;
-		this.ovalTool.doClick();	
+		this.retangleTool.doClick();	
 	}
 	
 	private class ActionHandler implements ActionListener {
