@@ -1,32 +1,32 @@
 package shapes;
 
+
 import java.awt.Graphics2D;
 
-public class TRectangle extends TShape {
+public class TOval extends TShape {
 	
 	private int x, y, w, h;
 	
-	public TRectangle() {
+	public TOval() {
 	}
 	
 	public TShape clone() {
-		return new TRectangle();
+		return new TOval();
 	}
 	
 	public void setOrigin(int x, int y) {
 		this.x = x;
 		this.y = y;
 		this.w = 0;
-		this.h = 0;		
+		this.h = 0;	
 	}
 	
-	@Override
 	public void resize(int x, int y) {
 		this.w = x-this.x;
 		this.h = y-this.y;
 	}
-	@Override
+	
 	public void draw(Graphics2D graphics) {
-		graphics.drawRect(x, y, w, h);
+		graphics.drawOval(x, y, w, h);
 	}
 }

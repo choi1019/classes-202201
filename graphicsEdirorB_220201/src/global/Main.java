@@ -1,4 +1,5 @@
 package global;
+
 import frames.MainFrame;
 
 public class Main {

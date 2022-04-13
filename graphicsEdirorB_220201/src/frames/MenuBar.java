@@ -1,4 +1,5 @@
 package frames;
+
 import javax.swing.JMenuBar;
 
 import menus.EditMenu;
