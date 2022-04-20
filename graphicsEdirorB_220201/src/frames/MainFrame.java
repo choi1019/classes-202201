@@ -26,6 +26,7 @@ public class MainFrame extends JFrame {
 		this.drawingPanel = new DrawingPanel();
 		this.add(this.drawingPanel, layoutManager.CENTER);
 		
+		this.menuBar.associate(this.drawingPanel);
 		this.toolBar.associate(this.drawingPanel);
 	}
 

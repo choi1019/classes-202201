@@ -10,17 +10,41 @@ import shapes.TShape;
 public class Constants {
 	
 	public enum ETools { 
-		eRectanble(new TRectangle()),
-		eOval(new TOval()),
-		eLine(new TLine()),
-		ePolygon(new TPolygon());
+		eOval("동그라미", new TOval()),
+		eRectanble("네모", new TRectangle()),
+		eLine("라인", new TLine()),
+		eLine1("라인1", new TLine()),
+		ePolygon("폴리곤", new TPolygon());
 		
+		private String label;
 		private TShape tool;
-		private ETools(TShape tool) {
+		private ETools(String label, TShape tool) {
+			this.label = label;
 			this.tool = tool;
+		}
+		public String getLabel() {
+			return this.label;
 		}
 		public TShape newShape() {
 			return this.tool.clone();
+		}
+	}
+	
+	public enum EFileMenu {
+		eNew("새로만들기"),
+		eOpen("열기"),
+		eSave("저장하기"),
+		eSaveAs("다른이름으로"),
+		eClose("닫기"),
+		ePrint("프린트"),
+		eQuit("종료");
+		
+		private String label;
+		private EFileMenu(String label) {
+			this.label = label;
+		}
+		public String getLabel() {
+			return this.label;
 		}
 	}
 }

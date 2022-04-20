@@ -44,4 +44,10 @@ public class TPolygon extends TShape {
 		graphics.drawPolyline(xPoints, yPoints, nPoints);
 	}
 
+	@Override
+	public boolean contains(int x, int y) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

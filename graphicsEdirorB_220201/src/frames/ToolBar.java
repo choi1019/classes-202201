@@ -11,11 +11,6 @@ import global.Constants.ETools;
 
 public class ToolBar extends JToolBar {
 	private static final long serialVersionUID = 1L;
-
-	private JRadioButton retangleTool;
-	private JRadioButton ovalTool;
-	private JRadioButton lineTool;
-	private JRadioButton polygonTool;
 	
 	private DrawingPanel drawingPanel;
 	
@@ -25,17 +20,18 @@ public class ToolBar extends JToolBar {
 		ActionHandler actionHandler = new ActionHandler();
 		
 		for (ETools eTool: ETools.values()) {
-			this.retangleTool = new JRadioButton("rectangle");
-			this.retangleTool.setActionCommand(ETools.eRectanble.name());
-			this.retangleTool.addActionListener(actionHandler);
-			this.add(this.retangleTool);		
-			buttonGroup.add(this.retangleTool);
+			JRadioButton toolButton = new JRadioButton(eTool.getLabel());
+			toolButton.setActionCommand(eTool.name());
+			toolButton.addActionListener(actionHandler);
+			this.add(toolButton);		
+			buttonGroup.add(toolButton);
 		}
 	}
 	
 	public void associate(DrawingPanel drawingPanel) {
 		this.drawingPanel = drawingPanel;
-		this.retangleTool.doClick();	
+		JRadioButton defaultButton = (JRadioButton) this.getComponent(ETools.eRectanble.ordinal());
+		defaultButton.doClick();	
 	}
 	
 	private class ActionHandler implements ActionListener {

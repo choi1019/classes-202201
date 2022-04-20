@@ -20,11 +20,12 @@ public class MainFrame extends JFrame {
 		this.setJMenuBar(this.menuBar);
 		
 		this.toolBar = new ToolBar();
-		this.add(this.toolBar, layoutManager.NORTH);
+		this.add(this.toolBar, BorderLayout.NORTH);
 		
 		this.drawingPanel = new DrawingPanel();
-		this.add(this.drawingPanel, layoutManager.CENTER);
+		this.add(this.drawingPanel, BorderLayout.CENTER);
 		
+		this.menuBar.associate(this.drawingPanel);
 		this.toolBar.associate(this.drawingPanel);
 	}
 

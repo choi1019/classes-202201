@@ -28,4 +28,10 @@ public class TOval extends TShape {
 	public void draw(Graphics2D graphics) {
 		graphics.drawOval(x, y, w, h);
 	}
+
+	@Override
+	public boolean contains(int x, int y) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

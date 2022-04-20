@@ -1,5 +1,6 @@
 package frames;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
@@ -45,6 +46,16 @@ public class DrawingPanel extends JPanel {
 		this.addMouseWheelListener(mouseHandler);
 	}
 	
+	// file open/save
+	public Object getShapes() {	
+		return this.shapes;	
+	}
+	@SuppressWarnings("unchecked")
+	public void setShapes(Object shapes) { 
+		this.shapes = (Vector<TShape>) shapes;
+		this.repaint();
+	}
+		
 	public void setSelectedTool(ETools selectedTool) {
 		this.selectedTool = selectedTool;		
 	}
@@ -84,6 +95,22 @@ public class DrawingPanel extends JPanel {
 		this.shapes.add(this.currentShape);
 	}	
 
+	private boolean onShape(int x, int y) {
+		for (TShape shape: this.shapes) {
+			if (shape.contains(x, y)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private void changeCursor(int x, int y) {
+		Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
+		if (onShape(x, y)) {
+			cursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
+		}
+		this.setCursor(cursor);
+	}
 	
 	private class MouseHandler implements MouseInputListener, MouseWheelListener {
 		@Override
@@ -117,6 +144,8 @@ public class DrawingPanel extends JPanel {
 		public void mouseMoved(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eNPointDrawing) {
 				keepDrawing(e.getX(), e.getY());
+			} else if (eDrawingState == EDrawingState.eIdle) {
+				changeCursor(e.getX(), e.getY());
 			}
 		}
 		
