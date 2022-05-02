@@ -1,10 +1,10 @@
 package shapes;
 
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-public class TRectangle extends TShape {
-	
+public class TRectangle extends TShape {	
+	private static final long serialVersionUID = 1L;
+
 	public TRectangle() {
 		this.shape = new Rectangle();
 	}
@@ -22,15 +22,5 @@ public class TRectangle extends TShape {
 	public void resize(int x, int y) {
 		Rectangle rectangle = (Rectangle) this.shape;
 		rectangle.setSize(x-rectangle.x, y-rectangle.y);
-	}
-	@Override
-	public void draw(Graphics2D graphics) {
-		graphics.draw(this.shape);
-	}
-
-	@Override
-	public boolean contains(int x, int y) {
-		// TODO Auto-generated method stub
-		return this.shape.contains(x, y);
 	}
 }
