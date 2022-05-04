@@ -23,6 +23,7 @@ public class DrawingPanel extends JPanel {
 	private Vector<TShape> shapes;
 	
 	// associated attribute
+	private TShape selectedShape;
 	private ETools selectedTool;
 	private TShape currentShape;
 	
@@ -35,7 +36,7 @@ public class DrawingPanel extends JPanel {
 	EDrawingState eDrawingState;
 	
 	public DrawingPanel() {
-		this.setBackground(Color.WHITE);		
+		this.setBackground(Color.WHITE);
 		this.eDrawingState = EDrawingState.eIdle;
 		
 		this.shapes = new Vector<TShape>();
@@ -93,20 +94,31 @@ public class DrawingPanel extends JPanel {
 	
 	private void finishDrawing(int x, int y) {
 		this.shapes.add(this.currentShape);
+		this.selectedShape = this.currentShape;
+		this.selectedShape.drawAnchors((Graphics2D) this.getGraphics());
 	}	
 
-	private boolean onShape(int x, int y) {
+	private TShape onShape(int x, int y) {
 		for (TShape shape: this.shapes) {
 			if (shape.contains(x, y)) {
-				return true;
+				return shape;
 			}
 		}
-		return false;
+		return null;
+	}
+	private void changeSelection(int x, int y) {
+		// erase previous selection
+		this.repaint();
+		// draw new selection
+		this.selectedShape = this.onShape(x, y);
+		if (this.selectedShape != null) {
+			this.selectedShape.drawAnchors((Graphics2D) this.getGraphics());
+		}
 	}
 	
 	private void changeCursor(int x, int y) {
 		Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
-		if (onShape(x, y)) {
+		if (onShape(x, y) != null) {
 			cursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
 		}
 		this.setCursor(cursor);
@@ -126,6 +138,7 @@ public class DrawingPanel extends JPanel {
 		
 		private void lButtonClicked(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdle) {
+				changeSelection(e.getX(), e.getY());
 				if (selectedTool == ETools.ePolygon) {
 					prepareDrawing(e.getX(), e.getY());
 					eDrawingState = EDrawingState.eNPointDrawing;

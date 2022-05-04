@@ -1,5 +1,6 @@
 package shapes;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
@@ -31,35 +32,27 @@ public class TAnchors {
 	
 	public void draw(Graphics2D graphics2D, Rectangle boundingRectangle) {
 		
-		int x =  boundingRectangle.x;
-		int y =  boundingRectangle.y;
-		int w =  boundingRectangle.width;
-		int h =  boundingRectangle.height;
-		
 		for (EAnchors eAnchor: EAnchors.values()) {
+			int x =  boundingRectangle.x;
+			int y =  boundingRectangle.y;
+			int w =  boundingRectangle.width;
+			int h =  boundingRectangle.height;
+			
 			switch (eAnchor) {
-			case eNW:
-				break;
-			case eWW:
-				y = y+h/2;
-				break;				
-			case eSW:
-				break;				
-			case eSS:
-				break;				
-			case eSE:
-				break;				
-			case eEE:
-				break;				
-			case eNE:
-				break;				
-			case eNN:
-				break;				
-			case eRR:
-				break;
-			default:
-				break;
+				case eNW:							break;
+				case eWW:				y = y+h/2;	break;				
+				case eSW:				y = y+h;	break;				
+				case eSS:	x = x+w/2;	y = y+h;	break;				
+				case eSE:	x = x+w;	y = y+h;	break;				
+				case eEE:	x = x+w;	y = y+h/2;	break;				
+				case eNE:	x = x+w;				break;				
+				case eNN:	x = x+w/2;				break;				
+				case eRR:	x = x+w/2;	y = y-h/2;	break;
+				default:							break;
 			}
+			x = x - WIDTH/2;
+			y = y - HEIGHT/2;
+			
 			this.anchors[eAnchor.ordinal()].setFrame(x, y, WIDTH, HEIGHT);
 			graphics2D.draw(this.anchors[eAnchor.ordinal()]);
 		}
