@@ -1,7 +1,5 @@
 package shapes;
 
-
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 public class TRectangle extends TShape {	

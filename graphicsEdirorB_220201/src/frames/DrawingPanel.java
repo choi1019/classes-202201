@@ -25,6 +25,7 @@ public class DrawingPanel extends JPanel {
 	
 	// associated attribute
 	private ETools selectedTool;
+	private TShape selectedShape;
 	private TShape currentShape;
 	
 	// working variables
@@ -93,20 +94,35 @@ public class DrawingPanel extends JPanel {
 	
 	private void finishDrawing(int x, int y) {
 		this.shapes.add(this.currentShape);
+		this.currentShape.drawAnchors((Graphics2D) this.getGraphics());
+		this.selectedShape = this.currentShape;
 	}	
 
-	private boolean onShape(int x, int y) {
+	private TShape onShape(int x, int y) {
 		for (TShape shape: this.shapes ) {
 			if (shape.contains(x, y)) {
-				return true;
+				return shape;
 			}
 		}
-		return false;
+		return null;
 	}
-	
+	private void changeSelection(int x, int y) {
+		Graphics2D graphics2D = (Graphics2D) this.getGraphics();
+		graphics2D.setXORMode(this.getBackground());
+		// erase anchors
+//		if (this.selectedShape != null) {
+//			this.selectedShape.drawAnchors(graphics2D);
+//		}
+		this.repaint();
+		// draw anchors
+		this.selectedShape = this.onShape(x, y);
+		if (this.selectedShape != null) {
+			this.selectedShape.drawAnchors(graphics2D);
+		}
+	}
 	private void changeCursor(int x, int y) {
 		Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
-		if (this.onShape(x, y)) {
+		if (this.onShape(x, y) != null) {
 			cursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
 		}
 		this.setCursor(cursor);
@@ -126,6 +142,7 @@ public class DrawingPanel extends JPanel {
 		
 		private void lButtonClicked(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdle) {
+				changeSelection(e.getX(), e.getY());
 				if (selectedTool == ETools.ePolygon) {
 					prepareDrawing(e.getX(), e.getY());
 					eDrawingState = EDrawingState.eNPointDrawing;
