@@ -1,6 +1,5 @@
 package shapes;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
@@ -19,20 +18,33 @@ public class TAnchors {
 		eEE,
 		eNE,
 		eNN,
-		eRR
+		eRR,
+		eMove
 	}
 	private Ellipse2D anchors[];
 	
+	// constructors
 	public TAnchors() {
-		this.anchors = new Ellipse2D[EAnchors.values().length];
-		for (EAnchors eAnchor: EAnchors.values()) {
-			this.anchors[eAnchor.ordinal()] = new Ellipse2D.Double();
+		this.anchors = new Ellipse2D[EAnchors.values().length-1];
+		for (int i=0; i<EAnchors.values().length-1; i++) {
+			this.anchors[i] = new Ellipse2D.Double();
 		}
+	}
+	
+	// methods
+	public EAnchors contains(int x, int y) {
+		for (int i=0; i<EAnchors.values().length-1; i++) {			
+			if (this.anchors[i].contains(x, y)) {
+				return EAnchors.values()[i];
+			}
+		}
+		return null;
 	}
 	
 	public void draw(Graphics2D graphics2D, Rectangle boundingRectangle) {
 		
-		for (EAnchors eAnchor: EAnchors.values()) {
+		for (int i=0; i<EAnchors.values().length-1; i++) {
+			EAnchors eAnchor = EAnchors.values()[i];
 			int x =  boundingRectangle.x;
 			int y =  boundingRectangle.y;
 			int w =  boundingRectangle.width;

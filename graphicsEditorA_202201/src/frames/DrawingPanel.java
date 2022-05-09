@@ -95,7 +95,8 @@ public class DrawingPanel extends JPanel {
 	private void finishDrawing(int x, int y) {
 		this.shapes.add(this.currentShape);
 		this.selectedShape = this.currentShape;
-		this.selectedShape.drawAnchors((Graphics2D) this.getGraphics());
+		this.selectedShape.setSelectd(true);
+		this.selectedShape.draw((Graphics2D) this.getGraphics());
 	}	
 
 	private TShape onShape(int x, int y) {
@@ -108,11 +109,13 @@ public class DrawingPanel extends JPanel {
 	}
 	private void changeSelection(int x, int y) {
 		// erase previous selection
+		this.selectedShape.setSelectd(false);
 		this.repaint();
 		// draw new selection
 		this.selectedShape = this.onShape(x, y);
-		if (this.selectedShape != null) {
-			this.selectedShape.drawAnchors((Graphics2D) this.getGraphics());
+		if (this.selectedShape!= null) {
+			this.selectedShape.setSelectd(true);
+			this.selectedShape.draw((Graphics2D) this.getGraphics());
 		}
 	}
 	
