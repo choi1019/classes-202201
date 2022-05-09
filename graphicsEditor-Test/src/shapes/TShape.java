@@ -1,15 +1,76 @@
 package shapes;
 
 import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.io.Serializable;
 
-abstract public class TShape {
-	public abstract TShape clone();
+import shapes.TAnchors.EAnchors;
+
+abstract public class TShape implements Serializable {
+	// attributes
+	private static final long serialVersionUID = 1L;
+	// components
+	protected Shape shape;
+	private TAnchors anchors;
+	// working
+	protected AffineTransform affineTransform;
 	
+	private boolean bSelected;
+	private EAnchors eSelectedAnchor;
+	
+	// setters and getters
+	public EAnchors getSelectedAnchor() {
+		return eSelectedAnchor;
+	}
+	public void setSelectedAnchor(EAnchors eSelectedAnchor) {
+		this.eSelectedAnchor = eSelectedAnchor;
+	}
+	public boolean isSelected() {
+		return bSelected;
+	}
+	public void setSelected(boolean bSelected) {
+		this.bSelected = bSelected;
+	}
+
+	// constructors
+	public TShape() {
+		this.anchors = new TAnchors();
+		this.affineTransform = new AffineTransform();
+	}
+	public abstract TShape clone();	
+	
+	// methods
 	public abstract void setOrigin(int x, int y);
 	public abstract void resize(int x, int y);
-	public abstract void draw(Graphics2D graphics);
+	public void addPoint(int x, int y) {}
+
+	public boolean contains(int x, int y) {
+		if (this.bSelected) {
+			this.eSelectedAnchor = this.anchors.contains(x, y);
+			if (this.eSelectedAnchor != null) {
+				return true;
+			}
+		}
+		if(this.shape.contains(x, y)) {
+			this.eSelectedAnchor = EAnchors.eMove;
+		}
+		return false;
+	}
 	
-	public boolean addPoint(int x, int y) { return false; }	
-	public void drawText(char c, Graphics2D graphics2dBufferedImage) {}
+	public void draw(Graphics2D graphics2D) {
+		graphics2D.draw(this.shape);
+		if (this.bSelected) {
+			this.anchors.draw(graphics2D, this.shape.getBounds());			
+		}
+	}
+	public void drawAnchors(Graphics2D graphics2D) {
+		this.anchors.draw(graphics2D, this.shape.getBounds());			
+	}
+	
+	public void translate(double tx, double ty) {
+		this.affineTransform.translate(tx, ty);
+		this.shape = this.affineTransform.tran
+	}
 }
 

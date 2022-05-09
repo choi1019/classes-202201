@@ -17,7 +17,6 @@ import javax.swing.JPanel;
 import global.Contants.EDrawingStyle;
 import global.Contants.ETools;
 import shapes.TShape;
-import shapes.TText;
 
 public class DrawingPanel extends JPanel {
 	// attribute
@@ -34,13 +33,13 @@ public class DrawingPanel extends JPanel {
 	private EDrawingState eDrawingState;
 	private ETools selectedTool;
 	private TShape currentShape;
+	private TShape selectedShape;
 	
 	private BufferedImage bufferedImage;
 	private Graphics2D graphics2DBufferedImage;
 
 	public DrawingPanel() {
 		// attributes
-		this.setBackground(Color.WHITE);
 		this.eDrawingState = EDrawingState.eIdle;
 		
 		// components
@@ -56,6 +55,8 @@ public class DrawingPanel extends JPanel {
 	}
 
 	public void initialize() {
+		//this.setBackground(Color.WHITE);
+		
 		this.bufferedImage = (BufferedImage) this.createImage(this.getWidth(), this.getHeight());		
 		this.graphics2DBufferedImage = (Graphics2D)(this.bufferedImage.getGraphics());
 		
@@ -72,6 +73,7 @@ public class DrawingPanel extends JPanel {
 	
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
+//		this.graphics2DBufferedImage.setBackground(this.getBackground());
 //		for(TShape shape: this.shapes) {
 //			shape.draw(graphics2DBufferedImage);		
 //		}
@@ -91,22 +93,48 @@ public class DrawingPanel extends JPanel {
 		this.currentShape.draw(graphics2DBufferedImage);		
 		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
 	}
-	private boolean continueDrawing(int x, int y) {
-		return this.currentShape.addPoint(x, y);
+	private void continueDrawing(int x, int y) {
+		this.currentShape.addPoint(x, y);
 	}
 	private void finishDrawing(int x, int y) {
-		this.shapes.add(this.currentShape);
-		if (this.currentShape instanceof TText) {
-			this.requestFocusInWindow();
-		}
+		if (this.selectedShape!=null) {
+			this.selectedShape.drawAnchors(graphics2DBufferedImage);		
+			this.selectedShape.setSelected(false);
+		}		
+		this.selectedShape = this.currentShape;
+		this.selectedShape.setSelected(true);
+		this.shapes.add(this.selectedShape);
+		this.currentShape.drawAnchors(graphics2DBufferedImage);		
+		
+		this.repaint();
 	}
 	
 	public void drawText(char keyChar) {
-		this.currentShape.drawText(keyChar, graphics2DBufferedImage);
-		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
+//		this.currentShape.drawText(keyChar, graphics2DBufferedImage);
+//		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
 	}
 	
-	
+	private TShape onShape(int x, int y) {
+		for (TShape shape: this.shapes ) {
+			if (shape.contains(x, y)) {
+				return shape;
+			}
+		}
+		return null;
+	}
+	private void changeSelection(int x, int y) {
+		if (this.selectedShape != null) {
+			this.selectedShape.drawAnchors(graphics2DBufferedImage);		
+			this.selectedShape.setSelected(false);
+		}
+		this.selectedShape = this.onShape(x, y);
+		if (this.selectedShape != null) {
+			this.selectedShape.setSelected(true);
+			this.currentShape.drawAnchors(graphics2DBufferedImage);		
+		}
+		this.repaint();
+	}
+
 	private class KeyHandler implements KeyListener {
 		@Override
 		public void keyTyped(KeyEvent e) {
@@ -127,34 +155,33 @@ public class DrawingPanel extends JPanel {
 		public void mouseClicked(MouseEvent e) {
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				if (e.getClickCount() == 1) {
-					lBUttonClick(e);
+					lButtonClicked(e);
 					System.out.println("lButtonClicked");
 				} else if (e.getClickCount() == 2) {
-					lBUttonDoubleClick(e);
+					lButtonDoubleClicked(e);
 					System.out.println("lButtonDoubleClicked");
 				}
 			}
 		}
 		
-		private void lBUttonClick(MouseEvent e) {
+		private void lButtonClicked(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdle) {
-				if (selectedTool.getDrawingStyle() == EDrawingStyle.eNPointDrawing) {
+				changeSelection(e.getX(), e.getY());
+				if (selectedTool == ETools.ePolygon) {
 					prepareDrawing(e.getX(), e.getY());
 					eDrawingState = EDrawingState.eNPointDrawing;
 				}
 			} else if (eDrawingState == EDrawingState.eNPointDrawing) {
-				if (!continueDrawing(e.getX(), e.getY())) {
-					finishDrawing(e.getX(), e.getY());
-					eDrawingState = EDrawingState.eIdle;
-				}
+				continueDrawing(e.getX(), e.getY());
 			}
-		}	
-		private void lBUttonDoubleClick(MouseEvent e) {
+		}
+		private void lButtonDoubleClicked(MouseEvent e) {			
 			if (eDrawingState == EDrawingState.eNPointDrawing) {
 				finishDrawing(e.getX(), e.getY());
 				eDrawingState = EDrawingState.eIdle;
 			}
 		}
+		
 		@Override
 		public void mouseMoved(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eNPointDrawing) {	

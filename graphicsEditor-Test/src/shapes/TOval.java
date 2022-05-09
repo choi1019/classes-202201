@@ -1,29 +1,26 @@
 package shapes;
 
-import java.awt.Graphics2D;
+import java.awt.geom.Ellipse2D;
 
 public class TOval extends TShape {
-	private int x, y, width, height;
-	
+
+	private static final long serialVersionUID = 1L;
+
 	public TOval() {
+		this.shape = new Ellipse2D.Double();
 	}
 	
 	public TShape clone() {
 		return new TOval();
 	}
 	
-	@Override
 	public void setOrigin(int x, int y) {
-		this.x = x;
-		this.y = y;
-		this.width = 0;
-		this.height = 0;
+		Ellipse2D ellipse = (Ellipse2D) this.shape;
+		ellipse.setFrame(x, y, 0, 0);
 	}
+	
 	public void resize(int x, int y) {
-		this.width = x - this.x;
-		this.height = y - this.y;		
-	}
-	public void draw(Graphics2D graphics) {
-		graphics.drawOval(this.x, this.y, this.width, this.height);
+		Ellipse2D ellipse = (Ellipse2D) this.shape;
+		ellipse.setFrame(ellipse.getX(), ellipse.getY(), x-ellipse.getX(),y-ellipse.getY());
 	}
 }
