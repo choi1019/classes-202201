@@ -93,9 +93,15 @@ public class DrawingPanel extends JPanel {
 	}
 	
 	private void finishDrawing(int x, int y) {
+		if (this.selectedShape!=null) {
+			this.selectedShape.setSelected(false);
+		}
+		this.repaint();
+		
 		this.shapes.add(this.currentShape);
-		this.currentShape.drawAnchors((Graphics2D) this.getGraphics());
 		this.selectedShape = this.currentShape;
+		this.selectedShape.setSelected(true);
+		this.selectedShape.draw((Graphics2D) this.getGraphics());
 	}	
 
 	private TShape onShape(int x, int y) {
@@ -107,19 +113,18 @@ public class DrawingPanel extends JPanel {
 		return null;
 	}
 	private void changeSelection(int x, int y) {
-		Graphics2D graphics2D = (Graphics2D) this.getGraphics();
-		graphics2D.setXORMode(this.getBackground());
-		// erase anchors
-//		if (this.selectedShape != null) {
-//			this.selectedShape.drawAnchors(graphics2D);
-//		}
+		if (this.selectedShape != null) {
+			this.selectedShape.setSelected(false);
+		}
 		this.repaint();
 		// draw anchors
 		this.selectedShape = this.onShape(x, y);
 		if (this.selectedShape != null) {
-			this.selectedShape.drawAnchors(graphics2D);
+			this.selectedShape.setSelected(true);
+			this.selectedShape.draw((Graphics2D) this.getGraphics());
 		}
 	}
+	
 	private void changeCursor(int x, int y) {
 		Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
 		if (this.onShape(x, y) != null) {

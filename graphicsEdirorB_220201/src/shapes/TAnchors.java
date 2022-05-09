@@ -19,26 +19,36 @@ public class TAnchors {
 		eEE,
 		eNE,
 		eNN,
-		eRR
+		eRR, 
+		eMove
 	}
 	private Ellipse2D anchors[];
 	
 	public TAnchors() {
-		this.anchors = new Ellipse2D[EAnchors.values().length];
-		for (EAnchors eAnchor: EAnchors.values()) {
-			this.anchors[eAnchor.ordinal()] = new Ellipse2D.Double();
+		this.anchors = new Ellipse2D[EAnchors.values().length-1];
+		for (int i=0; i<EAnchors.values().length-1; i++) {
+			this.anchors[i] = new Ellipse2D.Double();
 		}
 	}
 	
+	public EAnchors contains(int x, int y) {
+		for (int i=0; i<EAnchors.values().length-1; i++) {
+			if (this.anchors[i].contains(x, y)) {
+				return EAnchors.values()[i];
+			}
+		}
+		return null;
+	}
+	
 	public void draw(Graphics2D graphics2D, Rectangle BoundingRectangle) {
-		
-		
-		for (EAnchors eAnchor: EAnchors.values()) {
+		for (int i=0; i<EAnchors.values().length-1; i++) {
+			
 			int x = BoundingRectangle.x - WIDTH/2;
 			int y = BoundingRectangle.y - HEIGHT/2;
 			int w = BoundingRectangle.width;
 			int h = BoundingRectangle.height;
 			
+			EAnchors eAnchor = EAnchors.values()[i];
 			switch (eAnchor) {
 			case eNW:
 				break;
@@ -75,12 +85,7 @@ public class TAnchors {
 			}
 			
 			this.anchors[eAnchor.ordinal()].setFrame(x, y, WIDTH, HEIGHT);
-//			Color foreground = graphics2D.getColor();
-//			graphics2D.setColor(graphics2D.getBackground());
-//			graphics2D.fill(this.anchors[eAnchor.ordinal()]);
-//			graphics2D.setColor(foreground);
 			graphics2D.draw(this.anchors[eAnchor.ordinal()]);
 		}
 	}
-
 }
