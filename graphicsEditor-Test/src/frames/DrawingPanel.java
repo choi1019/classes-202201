@@ -22,7 +22,7 @@ import shapes.TText;
 public class DrawingPanel extends JPanel {
 	// attribute
 	private static final long serialVersionUID = 1L;
-
+ 
 	// components
 	private Vector<TShape> shapes;
 
