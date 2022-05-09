@@ -14,7 +14,7 @@ public class TPolygon extends TShape {
 		return new TPolygon();
 	}
 	
-	public void setOrigin(int x, int y) {
+	public void initDrawing(int x, int y) {
 		this.addPoint(x, y);
 		this.addPoint(x, y);
 	}

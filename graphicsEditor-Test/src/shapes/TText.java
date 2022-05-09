@@ -5,6 +5,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 
 public class TText extends TShape {
+	private static final long serialVersionUID = 1L;
 	private int x, y, width, height;
 	private String text;
 	
@@ -17,7 +18,7 @@ public class TText extends TShape {
 	}
 	
 	@Override
-	public void setOrigin(int x, int y) {
+	public void initDrawing(int x, int y) {
 		this.x = x;
 		this.y = y;
 		this.width = 0;

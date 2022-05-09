@@ -14,7 +14,7 @@ public class TOval extends TShape {
 		return new TOval();
 	}
 	
-	public void setOrigin(int x, int y) {
+	public void initDrawing(int x, int y) {
 		Ellipse2D ellipse = (Ellipse2D) this.shape;
 		ellipse.setFrame(x, y, 0, 0);
 	}

@@ -13,7 +13,7 @@ public class TLine extends TShape {
 		return new TLine();
 	}
 	
-	public void setOrigin(int x, int y) {
+	public void initDrawing(int x, int y) {
 		Line2D line = (Line2D) this.shape;
 		line.setLine(x, y, x, y);
 	
