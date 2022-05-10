@@ -25,7 +25,7 @@ public class TText extends TShape {
 		this.height = 0;
 	}
 	
-	public void resize(int x, int y) {
+	public void keepDrawing(int x, int y) {
 		this.width = x - this.x;
 		this.height = y - this.y;		
 	}

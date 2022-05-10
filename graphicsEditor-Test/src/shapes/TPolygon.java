@@ -25,7 +25,7 @@ public class TPolygon extends TShape {
 	}
 	
 	@Override
-	public void resize(int x, int y) {
+	public void keepDrawing(int x, int y) {
 		Polygon polygon = (Polygon) this.shape;
 		polygon.xpoints[polygon.npoints-1] = x;
 		polygon.ypoints[polygon.npoints-1] = y;

@@ -48,7 +48,7 @@ abstract public class TShape implements Serializable {
 	
 	// methods
 	public abstract void initDrawing(int x, int y);
-	
+	public abstract void keepDrawing(int x, int y);	
 	public void addPoint(int x, int y) {}
 
 	public boolean contains(int x, int y) {
@@ -122,14 +122,16 @@ abstract public class TShape implements Serializable {
 		switch (this.eSelectedAnchor) {
 			case eEE: p.setLocation(anchors.getCenterX(EAnchors.eWW), 	0); 	 break;
 			case eWW: p.setLocation(anchors.getCenterX(EAnchors.eEE), 	0); 	 break;
-			case eSS: p.setLocation(0, 			  					anchors.getCenterY(EAnchors.eNN)); break;
-			case eNN: p.setLocation(0, 			  					anchors.getCenterY(EAnchors.eSS)); break;
-			case eSE: p.setLocation(anchors.getCenterX(EAnchors.eNW), anchors.getCenterY(EAnchors.eNW)); break;
-			case eNE: p.setLocation(anchors.getCenterX(EAnchors.eSW), anchors.getCenterY(EAnchors.eSW)); break;
-			case eSW: p.setLocation(anchors.getCenterX(EAnchors.eNE), anchors.getCenterY(EAnchors.eNE)); break;
-			case eNW: p.setLocation(anchors.getCenterX(EAnchors.eSE), anchors.getCenterY(EAnchors.eSE)); break;
+			case eSS: p.setLocation(0, 			  						anchors.getCenterY(EAnchors.eNN)); break;
+			case eNN: p.setLocation(0, 			  						anchors.getCenterY(EAnchors.eSS)); break;
+			case eSE: p.setLocation(anchors.getCenterX(EAnchors.eNW), 	anchors.getCenterY(EAnchors.eNW)); break;
+			case eNE: p.setLocation(anchors.getCenterX(EAnchors.eSW), 	anchors.getCenterY(EAnchors.eSW)); break;
+			case eSW: p.setLocation(anchors.getCenterX(EAnchors.eNE), 	anchors.getCenterY(EAnchors.eNE)); break;
+			case eNW: p.setLocation(anchors.getCenterX(EAnchors.eSE), 	anchors.getCenterY(EAnchors.eSE)); break;
 			default: break;
 		}
+		px = x;
+		py = y;
 		cx = p.x;
 		cy = p.y;
 	}
@@ -141,22 +143,22 @@ abstract public class TShape implements Serializable {
 		double dh = 0;
 		
 		switch (this.getSelectedAnchor()) {
-			case eEE: dw =  x-px; 	dh=  0; 	 break;
-			case eWW: dw =-(x-px);	dh=  0; 	 break;
+			case eEE: dw =  x-px; 	dh=  0; 	break;
+			case eWW: dw =-(x-px);	dh=  0;		break;
 			case eSS: dw =  0;		dh=  y-py;  break;
 			case eNN: dw =  0;		dh=-(y-py); break;
-			case eSE: dw =  x-px; 	dh=  y-py;	 break;
+			case eSE: dw =  x-px; 	dh=  y-py;	break;
 			case eNE: dw =  x-px; 	dh=-(y-py); break;
-			case eSW: dw =-(x-px);	dh=  y-py;	 break;	
+			case eSW: dw =-(x-px);	dh=  y-py;	break;	
 			case eNW: dw =-(x-px);	dh=-(y-py); break;
 			default: break;
 		}
 		// compute resize 
 		double xFactor = 1.0;
 		double yFactor = 1.0;
-		if (width > 0.0)
+		if (width > 0)
 			xFactor = dw / width + xFactor;
-		if (height > 0.0)			
+		if (height > 0)			
 			yFactor = dh / height + yFactor;
 		
 		this.affineTransform.translate(cx, cy);
@@ -166,6 +168,7 @@ abstract public class TShape implements Serializable {
 		this.px = x;
 		this.py = y;
 	}
-
+	public void finishResize(int x, int y) {
+	}
 }
 

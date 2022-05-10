@@ -1,5 +1,4 @@
 package frames;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -95,7 +94,7 @@ public class DrawingPanel extends JPanel {
 		// erase
 		this.currentShape.draw(graphics2DBufferedImage);		
 		// draw
-		this.currentShape.resize(x, y);
+		this.currentShape.keepDrawing(x, y);
 		this.currentShape.draw(graphics2DBufferedImage);		
 		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
 	}
@@ -136,7 +135,7 @@ public class DrawingPanel extends JPanel {
 		}		
 		this.selectedShape = this.currentShape;
 		this.selectedShape.setSelected(true);
-		this.currentShape.drawAnchors(graphics2DBufferedImage);		
+		this.selectedShape.drawAnchors(graphics2DBufferedImage);		
 		
 		this.repaint();
 	}
@@ -180,6 +179,8 @@ public class DrawingPanel extends JPanel {
 		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
 	}
 	private void finishResizing(int x, int y) {
+		this.currentShape.finishResize(x, y);
+
 		if (this.selectedShape!=null) {
 			this.selectedShape.drawAnchors(graphics2DBufferedImage);		
 			this.selectedShape.setSelected(false);
