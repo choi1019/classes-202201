@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
 import global.Constants.ETools;
+import shapes.TAnchors.EAnchors;
+import shapes.TSelection;
 import shapes.TShape;
 
 public class DrawingPanel extends JPanel {
@@ -32,7 +34,7 @@ public class DrawingPanel extends JPanel {
 	private enum EDrawingState {
 		eIdle,
 		e2PointDrawing,
-		eNPointDrawing
+		eNPointDrawing, eMoving, eRotating
 	}
 	EDrawingState eDrawingState;
 	
@@ -96,12 +98,15 @@ public class DrawingPanel extends JPanel {
 		if (this.selectedShape!=null) {
 			this.selectedShape.setSelected(false);
 		}
-		this.repaint();
 		
-		this.shapes.add(this.currentShape);
-		this.selectedShape = this.currentShape;
-		this.selectedShape.setSelected(true);
-		this.selectedShape.draw((Graphics2D) this.getGraphics());
+		if (!(this.currentShape instanceof TSelection)) {
+			this.shapes.add(this.currentShape);
+			this.selectedShape = this.currentShape;
+			this.selectedShape.setSelected(true);
+			this.selectedShape.draw((Graphics2D) this.getGraphics());
+		}
+		
+		this.repaint();
 	}	
 
 	private TShape onShape(int x, int y) {
@@ -126,10 +131,32 @@ public class DrawingPanel extends JPanel {
 	}
 	
 	private void changeCursor(int x, int y) {
-		Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
-		if (this.onShape(x, y) != null) {
-			cursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
+		Cursor cursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
+		if (this.selectedTool == ETools.eSelection) {
+			cursor = new Cursor(Cursor.DEFAULT_CURSOR);
+			
+			this.currentShape = this.onShape(x, y);		
+			if (this.currentShape != null) {
+				cursor = new Cursor(Cursor.MOVE_CURSOR);
+				if (this.currentShape.isSelected()) {
+					EAnchors eAnchor = this.currentShape.getSelectedAnchor();
+					switch(eAnchor) {
+						case eRR: cursor = new Cursor(Cursor.HAND_CURSOR); break;
+						case eNW: cursor = new Cursor(Cursor.NW_RESIZE_CURSOR); break;
+						case eWW: cursor = new Cursor(Cursor.W_RESIZE_CURSOR); break;
+						case eSW: cursor = new Cursor(Cursor.SW_RESIZE_CURSOR); break;
+						case eSS: cursor = new Cursor(Cursor.S_RESIZE_CURSOR); break;
+						case eSE: cursor = new Cursor(Cursor.SE_RESIZE_CURSOR); break;
+						case eEE: cursor = new Cursor(Cursor.E_RESIZE_CURSOR); break;
+						case eNE: cursor = new Cursor(Cursor.NE_RESIZE_CURSOR); break;
+						case eNN: cursor = new Cursor(Cursor.N_RESIZE_CURSOR); break;
+						default: break;
+					}
+					
+				}
+			}
 		}
+		
 		this.setCursor(cursor);
 	}
 	
@@ -174,9 +201,22 @@ public class DrawingPanel extends JPanel {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdle) {
-				if (selectedTool != ETools.ePolygon) {
-					prepareDrawing(e.getX(), e.getY());
-					eDrawingState = EDrawingState.e2PointDrawing;
+				if (selectedTool == ETools.eSelection) {
+					currentShape = onShape(e.getX(), e.getY());
+					if (currentShape != null) {	
+						EAnchors eAnchor = currentShape.getSelectedAnchor();
+						if(eAnchor == EAnchors.eMove) {
+							prepareMoving(e.getX(), e.getY());
+							eDrawingState = EDrawingState.eMoving;
+						} else if(eAnchor == EAnchors.eRR) {
+						} else {							
+						}
+					}					
+				} else {
+					if (selectedTool != ETools.ePolygon) {
+						prepareDrawing(e.getX(), e.getY());
+						eDrawingState = EDrawingState.e2PointDrawing;
+					}
 				}
 			}
 		}
@@ -184,12 +224,17 @@ public class DrawingPanel extends JPanel {
 		public void mouseDragged(MouseEvent e) {
 			if (eDrawingState == EDrawingState.e2PointDrawing) {
 				keepDrawing(e.getX(), e.getY());
+			} else if (eDrawingState == EDrawingState.eMoving) {
+				keepMoving(e.getX(), e.getY());
 			}
 		}
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (eDrawingState == EDrawingState.e2PointDrawing) {
 				finishDrawing(e.getX(), e.getY());
+				eDrawingState = EDrawingState.eIdle;
+			} else if (eDrawingState == EDrawingState.eMoving) {
+				finishMoving(e.getX(), e.getY());
 				eDrawingState = EDrawingState.eIdle;
 			}
 		}

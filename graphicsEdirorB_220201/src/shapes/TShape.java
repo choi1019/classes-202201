@@ -50,6 +50,7 @@ abstract public class TShape implements Serializable {
 		}
 		if(this.shape.contains(x, y)) {
 			this.eSelectedAnchor = EAnchors.eMove;
+			return true;
 		}
 		return false;
 	}

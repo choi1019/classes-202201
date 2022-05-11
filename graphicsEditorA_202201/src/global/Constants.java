@@ -2,6 +2,7 @@ package global;
 
 import shapes.TShape;
 import shapes.TRectangle;
+import shapes.TSelection;
 import shapes.TOval;
 import shapes.TLine;
 import shapes.TPolygon;
@@ -9,9 +10,9 @@ import shapes.TPolygon;
 public class Constants {
 	
 	public enum ETools { 
-		eOval("동그라미", new TOval()),
+		eSelection("선택", new TSelection()),
 		eRectanble("네모", new TRectangle()),
-		eRectanble1("네모1", new TRectangle()),
+		eOval("동그라미", new TOval()),
 		eLine("라인", new TLine()),
 		ePolygon("다각형", new TPolygon());
 		

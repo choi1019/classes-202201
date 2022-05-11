@@ -1,7 +1,6 @@
 package frames;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 import javax.swing.JToolBar;
@@ -29,7 +28,7 @@ public class ToolBar extends JToolBar {
 	
 	public void associate(DrawingPanel drawingPanel) {
 		this.drawingPanel = drawingPanel;
-		JRadioButton defaultButton = (JRadioButton) this.getComponent(ETools.eRectanble.ordinal());
+		JRadioButton defaultButton = (JRadioButton) this.getComponent(ETools.eSelection.ordinal());
 		defaultButton.doClick();
 	}
 	

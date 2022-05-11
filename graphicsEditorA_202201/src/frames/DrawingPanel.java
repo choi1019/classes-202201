@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
 import global.Constants.ETools;
+import shapes.TAnchors.EAnchors;
+import shapes.TSelection;
 import shapes.TShape;
 
 public class DrawingPanel extends JPanel {
@@ -31,7 +33,7 @@ public class DrawingPanel extends JPanel {
 	private enum EDrawingState {
 		eIdle,
 		e2PointDrawing,
-		eNPointDrawing
+		eNPointDrawing, eMoving
 	}
 	EDrawingState eDrawingState;
 	
@@ -93,10 +95,18 @@ public class DrawingPanel extends JPanel {
 	}
 	
 	private void finishDrawing(int x, int y) {
-		this.shapes.add(this.currentShape);
-		this.selectedShape = this.currentShape;
-		this.selectedShape.setSelectd(true);
-		this.selectedShape.draw((Graphics2D) this.getGraphics());
+		if (this.selectedShape!=null) {
+			this.selectedShape.setSelectd(false);
+		}
+
+		if (!(this.currentShape instanceof TSelection)) { 
+			this.shapes.add(this.currentShape);
+			this.selectedShape = this.currentShape;
+			this.selectedShape.setSelectd(true);
+		}		
+		
+		this.repaint();
+		//this.selectedShape.draw((Graphics2D) this.getGraphics());
 	}	
 
 	private TShape onShape(int x, int y) {
@@ -107,22 +117,44 @@ public class DrawingPanel extends JPanel {
 		}
 		return null;
 	}
+	
 	private void changeSelection(int x, int y) {
 		// erase previous selection
-		this.selectedShape.setSelectd(false);
-		this.repaint();
+		if (this.selectedShape!= null) {
+			this.selectedShape.setSelectd(false);
+		}
 		// draw new selection
 		this.selectedShape = this.onShape(x, y);
 		if (this.selectedShape!= null) {
 			this.selectedShape.setSelectd(true);
 			this.selectedShape.draw((Graphics2D) this.getGraphics());
 		}
+		this.repaint();
 	}
 	
 	private void changeCursor(int x, int y) {
 		Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
-		if (onShape(x, y) != null) {
+		if (this.selectedTool != ETools.eSelection) {
 			cursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
+		}		
+		this.currentShape = onShape(x, y);
+		if (this.currentShape != null) {
+			cursor = new Cursor(Cursor.MOVE_CURSOR);
+			if (this.currentShape.isSelected()) {
+				EAnchors eAnchor = this.currentShape.getSelectedAnchor();
+				switch (eAnchor) {
+					case eRR: cursor = new Cursor(Cursor.HAND_CURSOR); 		break;
+					case eNW: cursor = new Cursor(Cursor.NW_RESIZE_CURSOR); break;
+					case eWW: cursor = new Cursor(Cursor.W_RESIZE_CURSOR); 	break;
+					case eSW: cursor = new Cursor(Cursor.SW_RESIZE_CURSOR); break;
+					case eSS: cursor = new Cursor(Cursor.S_RESIZE_CURSOR); 	break;
+					case eSE: cursor = new Cursor(Cursor.SE_RESIZE_CURSOR); break;
+					case eEE: cursor = new Cursor(Cursor.E_RESIZE_CURSOR); 	break;
+					case eNE: cursor = new Cursor(Cursor.NE_RESIZE_CURSOR); break;
+					case eNN: cursor = new Cursor(Cursor.N_RESIZE_CURSOR); 	break;
+					default: break;
+				}
+			}
 		}
 		this.setCursor(cursor);
 	}
@@ -168,9 +200,21 @@ public class DrawingPanel extends JPanel {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdle) {
-				if (selectedTool != ETools.ePolygon) {
-					prepareDrawing(e.getX(), e.getY());
-					eDrawingState = EDrawingState.e2PointDrawing;
+				if (selectedTool == ETools.eSelection) {
+					currentShape = onShape(e.getX(), e.getY());
+					if (currentShape != null) {
+						if (currentShape.getSelectedAnchor() == EAnchors.eMove) {
+							prepareMoving(e.getX(), e.getY());
+							eDrawingState = EDrawingState.eMoving;
+						} else if (currentShape.getSelectedAnchor() == EAnchors.eRR) {							
+						} else {							
+						}
+					}
+				} else {			
+					if (selectedTool != ETools.ePolygon) {
+						prepareDrawing(e.getX(), e.getY());
+						eDrawingState = EDrawingState.e2PointDrawing;
+					}
 				}
 			}
 		}
@@ -178,12 +222,17 @@ public class DrawingPanel extends JPanel {
 		public void mouseDragged(MouseEvent e) {
 			if (eDrawingState == EDrawingState.e2PointDrawing) {
 				keepDrawing(e.getX(), e.getY());
+			} else if (eDrawingState == EDrawingState.eMoving) {
+				keepMoving(e.getX(), e.getY());
 			}
 		}
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (eDrawingState == EDrawingState.e2PointDrawing) {
 				finishDrawing(e.getX(), e.getY());
+				eDrawingState = EDrawingState.eIdle;
+			} else if (eDrawingState == EDrawingState.eMoving) {
+				finishMoving(e.getX(), e.getY());
 				eDrawingState = EDrawingState.eIdle;
 			}
 		}

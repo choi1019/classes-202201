@@ -5,15 +5,16 @@ import shapes.TLine;
 import shapes.TOval;
 import shapes.TPolygon;
 import shapes.TRectangle;
+import shapes.TSelection;
 import shapes.TShape;
 
 public class Constants {
 	
 	public enum ETools { 
-		eOval("동그라미", new TOval()),
+		eSelection("선택", new TSelection()),
 		eRectanble("네모", new TRectangle()),
+		eOval("동그라미", new TOval()),
 		eLine("라인", new TLine()),
-		eLine1("라인1", new TLine()),
 		ePolygon("폴리곤", new TPolygon());
 		
 		private String label;
