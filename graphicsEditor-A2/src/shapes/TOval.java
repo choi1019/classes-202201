@@ -2,8 +2,7 @@ package shapes;
 
 import java.awt.geom.Ellipse2D;
 
-public class TOval extends TShape {
-
+public class TOval extends TShape {	
 	private static final long serialVersionUID = 1L;
 
 	public TOval() {
@@ -21,6 +20,6 @@ public class TOval extends TShape {
 	
 	public void keepDrawing(int x, int y) {
 		Ellipse2D ellipse = (Ellipse2D) this.shape;
-		ellipse.setFrame(ellipse.getX(), ellipse.getY(), x-ellipse.getX(),y-ellipse.getY());
+		ellipse.setFrame(ellipse.getX(), ellipse.getY(), x-ellipse.getX(), y-ellipse.getY());
 	}
 }
