@@ -23,7 +23,7 @@ public class GToolBar extends JToolBar {
 		ButtonGroup group = new ButtonGroup();
 		
 		for (EToolBarButton eToolBarButton: EToolBarButton.values()) {
-			JRadioButton button = new JRadioButton();
+			JRadioButton button = new JRadioButton("a");
 			button.setIcon(new ImageIcon(eToolBarButton.getImageFileName()));
 			button.setSelectedIcon(new ImageIcon(eToolBarButton.getImageSltFile()));
 			button.setToolTipText(eToolBarButton.getToolTipText());

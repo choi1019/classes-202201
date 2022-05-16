@@ -76,7 +76,7 @@ public class DrawingPanel extends JPanel {
 		
 		Graphics2D graphics2d = (Graphics2D) this.getGraphics();
 		graphics2d.setXORMode(this.getBackground());
-		this.currentShape.setOrigin(x, y);
+		this.currentShape.prepareDrawing(x, y);
 		this.currentShape.draw(graphics2d);		
 	}
 	
@@ -86,7 +86,7 @@ public class DrawingPanel extends JPanel {
 		graphics2d.setXORMode(this.getBackground());
 		this.currentShape.draw(graphics2d);
 		// draw
-		this.currentShape.resize(x, y);
+		this.currentShape.keepDrawing(x, y);
 		this.currentShape.draw(graphics2d);
 	}
 	
@@ -107,7 +107,37 @@ public class DrawingPanel extends JPanel {
 		}
 		
 		this.repaint();
+	}
+	
+	private void prepareMoving(int x, int y) {
+		Graphics2D graphics2d = (Graphics2D) this.getGraphics();
+		graphics2d.setXORMode(this.getBackground());
+		this.currentShape.prepareMoving(x, y);
+		this.currentShape.draw(graphics2d);		
+	}
+	private void keepMoving(int x, int y) {
+		// erase
+		Graphics2D graphics2d = (Graphics2D) this.getGraphics();
+		graphics2d.setXORMode(this.getBackground());
+		this.currentShape.draw(graphics2d);
+		// draw
+		this.currentShape.keepMoving(x, y);
+		this.currentShape.draw(graphics2d);
+	}
+	private void finishMoving(int x, int y) {
+		if (this.selectedShape!=null) {
+			this.selectedShape.setSelected(false);
+		}
+		
+		if (!(this.currentShape instanceof TSelection)) {
+			this.selectedShape = this.currentShape;
+			this.selectedShape.setSelected(true);
+			this.selectedShape.draw((Graphics2D) this.getGraphics());
+		}
+		
+		this.repaint();
 	}	
+
 
 	private TShape onShape(int x, int y) {
 		for (TShape shape: this.shapes ) {

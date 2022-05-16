@@ -2,6 +2,7 @@ package shapes;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 import java.io.Serializable;
 
 import shapes.TAnchors.EAnchors;
@@ -13,6 +14,9 @@ abstract public class TShape implements Serializable {
 	protected Shape shape;
 	private TAnchors anchors;
 	// working
+	private int px, py;
+	private AffineTransform affineTransform;
+	
 	private boolean bSelected;
 	private EAnchors eSelectedAnchor;
 	
@@ -32,23 +36,28 @@ abstract public class TShape implements Serializable {
 
 	// constructors
 	public TShape() {
+		this.bSelected = false;
+		this.affineTransform = new AffineTransform();
+		this.affineTransform.setToIdentity();
+		
 		this.anchors = new TAnchors();
 	}
 	public abstract TShape clone();	
 	
 	// methods
-	public abstract void setOrigin(int x, int y);
-	public abstract void resize(int x, int y);
+	public abstract void prepareDrawing(int x, int y);
+	public abstract void keepDrawing(int x, int y);
 	public void addPoint(int x, int y) {}
 
 	public boolean contains(int x, int y) {
+		Shape transformedShape = this.affineTransform.createTransformedShape(this.shape);
 		if (this.bSelected) {
 			this.eSelectedAnchor = this.anchors.contains(x, y);
 			if (this.eSelectedAnchor != null) {
 				return true;
 			}
 		}
-		if(this.shape.contains(x, y)) {
+		if(transformedShape.contains(x, y)) {
 			this.eSelectedAnchor = EAnchors.eMove;
 			return true;
 		}
@@ -56,10 +65,20 @@ abstract public class TShape implements Serializable {
 	}
 	
 	public void draw(Graphics2D graphics2D) {
-		graphics2D.draw(this.shape);
+		Shape transformedShape = this.affineTransform.createTransformedShape(this.shape);
+		graphics2D.draw(transformedShape);
 		if (this.bSelected) {
-			this.anchors.draw(graphics2D, this.shape.getBounds());			
+			this.anchors.draw(graphics2D, transformedShape.getBounds());			
 		}
+	}
+	public void prepareMoving(int x, int y) {
+		this.px = x;
+		this.py = y;		
+	}
+	public void keepMoving(int x, int y) {
+		this.affineTransform.translate(x-this.px, y-this.py);
+		this.px = x;
+		this.py = y;			
 	}
 }
 
