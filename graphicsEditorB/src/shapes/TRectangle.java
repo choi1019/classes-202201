@@ -13,13 +13,13 @@ public class TRectangle extends TShape {
 		return new TRectangle();
 	}
 	
-	public void setOrigin(int x, int y) {
+	public void prepareDrawing(int x, int y) {
 		Rectangle rectangle = (Rectangle) this.shape;
 		rectangle.setFrame(x, y, 0, 0);
 	}
 	
 	@Override
-	public void resize(int x, int y) {
+	public void keepDrawing(int x, int y) {
 		Rectangle rectangle = (Rectangle) this.shape;
 		rectangle.setSize(x-rectangle.x, y-rectangle.y);
 	}

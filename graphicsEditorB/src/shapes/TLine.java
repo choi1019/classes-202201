@@ -13,13 +13,13 @@ public class TLine extends TShape {
 		return new TLine();
 	}
 	
-	public void setOrigin(int x, int y) {
+	public void prepareDrawing(int x, int y) {
 		Line2D line = (Line2D) this.shape;
 		line.setLine(x, y, x, y);
 	
 	}
 	
-	public void resize(int x, int y) {
+	public void keepDrawing(int x, int y) {
 		Line2D line = (Line2D) this.shape;
 		line.setLine(line.getX1(), line.getY1(), x, y);
 	}

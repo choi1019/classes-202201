@@ -14,7 +14,7 @@ public class TPolygon extends TShape {
 		return new TPolygon();
 	}
 	
-	public void setOrigin(int x, int y) {
+	public void prepareDrawing(int x, int y) {
 		this.addPoint(x, y);
 		this.addPoint(x, y);
 	}
@@ -25,7 +25,7 @@ public class TPolygon extends TShape {
 	}
 	
 	@Override
-	public void resize(int x, int y) {
+	public void keepDrawing(int x, int y) {
 		Polygon polygon = (Polygon) this.shape;
 		polygon.xpoints[polygon.npoints-1] = x;
 		polygon.ypoints[polygon.npoints-1] = y;

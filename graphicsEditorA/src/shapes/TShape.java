@@ -2,6 +2,7 @@ package shapes;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 import java.io.Serializable;
 
 import shapes.TAnchors.EAnchors;
@@ -13,11 +14,16 @@ abstract public class TShape implements Serializable {
 	protected Shape shape;
 	private TAnchors anchors;
 	// working
+	private AffineTransform affineTransform;
+	private int px, py;
 	private boolean bSelected;
 	private EAnchors eSelectedAnchor;
 	
 	// constructor
 	public TShape() {
+		this.affineTransform = new AffineTransform();
+		this.affineTransform.setToIdentity();
+		
 		this.anchors = new TAnchors();
 		this.bSelected = false;
 	}
@@ -26,8 +32,6 @@ abstract public class TShape implements Serializable {
 	public void initialize() {}
 	
 	// setters and getters
-	public abstract void setOrigin(int x, int y);
-	public void addPoint(int x, int y) {}	
 	public boolean isSelected() {
 		return this.bSelected;
 	}
@@ -54,12 +58,26 @@ abstract public class TShape implements Serializable {
 		return false;
 	}	
 	public void draw(Graphics2D graphics2D) {
+		graphics2D.setTransform(this.affineTransform);		
 		graphics2D.draw(this.shape);
+		
 		if (isSelected()) {
 			this.anchors.draw(graphics2D, this.shape.getBounds());
 		}
 	}
 	
-	public abstract void resize(int x, int y);	
+	public abstract void prepareDrawing(int x, int y);
+	public abstract void keepDrawing(int x, int y);
+	public void addPoint(int x, int y) {}	
+
+	public void prepareMoving(int x, int y) {
+		this.px = x;
+		this.py = y;
+	}	
+	public void keepMoving(int x, int y) {
+		this.affineTransform.translate(x - this.px, y - this.py);
+		this.px = x;
+		this.py = y;
+	}
 }
 
