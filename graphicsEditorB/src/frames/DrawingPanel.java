@@ -13,9 +13,15 @@ import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
 import global.Constants.ETools;
+import global.Constants.ETransformationStyle;
 import shapes.TAnchors.EAnchors;
 import shapes.TSelection;
 import shapes.TShape;
+import transformer.Drawer;
+import transformer.Mover;
+import transformer.Resizer;
+import transformer.Rotator;
+import transformer.Transformer;
 
 public class DrawingPanel extends JPanel {
 
@@ -29,6 +35,7 @@ public class DrawingPanel extends JPanel {
 	private ETools selectedTool;
 	private TShape selectedShape;
 	private TShape currentShape;
+	private Transformer transformer;
 	
 	// working variables
 	private enum EDrawingState {
@@ -70,31 +77,52 @@ public class DrawingPanel extends JPanel {
 			shape.draw((Graphics2D)graphics);
 		}
 	}	
-
-	private void prepareDrawing(int x, int y) {
-		this.currentShape = this.selectedTool.newShape();
+	
+	private void prepareTransforming(int x, int y) {
+		if (selectedTool == ETools.eSelection) {
+			currentShape = onShape(x, y);
+			if (currentShape != null) {	
+				EAnchors eAnchor = currentShape.getSelectedAnchor();
+				if(eAnchor == EAnchors.eMove) {
+					this.transformer = new Mover(this.currentShape);
+				} else if(eAnchor == EAnchors.eRR) {
+					this.transformer = new Rotator(this.currentShape);
+				} else {							
+					this.transformer = new Resizer(this.currentShape);
+				}
+			} else {
+				this.currentShape = this.selectedTool.newShape();
+				this.transformer = new Drawer(this.currentShape);
+			}
+		} else {
+			this.currentShape = this.selectedTool.newShape();
+			this.transformer = new Drawer(this.currentShape);
+		}
 		
-		Graphics2D graphics2d = (Graphics2D) this.getGraphics();
-		graphics2d.setXORMode(this.getBackground());
-		this.currentShape.prepareDrawing(x, y);
-		this.currentShape.draw(graphics2d);		
+		Graphics2D graphics2D = (Graphics2D) this.getGraphics();
+		graphics2D.setXORMode(this.getBackground());
+		this.transformer.prepare(x, y, graphics2D);
 	}
 	
-	private void keepDrawing(int x, int y) {
+	private void keepTransforming(int x, int y) {
 		// erase
-		Graphics2D graphics2d = (Graphics2D) this.getGraphics();
-		graphics2d.setXORMode(this.getBackground());
-		this.currentShape.draw(graphics2d);
+		Graphics2D graphics2D = (Graphics2D) this.getGraphics();
+		graphics2D.setXORMode(this.getBackground());
+		this.currentShape.draw(graphics2D);
 		// draw
-		this.currentShape.keepDrawing(x, y);
-		this.currentShape.draw(graphics2d);
+		this.transformer.keepTransforming(x, y, graphics2D);
+		this.currentShape.draw(graphics2D);
 	}
 	
-	private void continueDrawing(int x, int y) {
+	private void continueTransforming(int x, int y) {
 		this.currentShape.addPoint(x, y);
 	}
 	
-	private void finishDrawing(int x, int y) {
+	private void finishTransforming(int x, int y) {
+		Graphics2D graphics2D = (Graphics2D) this.getGraphics();
+		graphics2D.setXORMode(this.getBackground());
+		this.transformer.finalize(x, y, graphics2D);
+		
 		if (this.selectedShape!=null) {
 			this.selectedShape.setSelected(false);
 		}
@@ -103,41 +131,10 @@ public class DrawingPanel extends JPanel {
 			this.shapes.add(this.currentShape);
 			this.selectedShape = this.currentShape;
 			this.selectedShape.setSelected(true);
-			this.selectedShape.draw((Graphics2D) this.getGraphics());
-		}
-		
-		this.repaint();
-	}
-	
-	private void prepareMoving(int x, int y) {
-		Graphics2D graphics2d = (Graphics2D) this.getGraphics();
-		graphics2d.setXORMode(this.getBackground());
-		this.currentShape.prepareMoving(x, y);
-		this.currentShape.draw(graphics2d);		
-	}
-	private void keepMoving(int x, int y) {
-		// erase
-		Graphics2D graphics2d = (Graphics2D) this.getGraphics();
-		graphics2d.setXORMode(this.getBackground());
-		this.currentShape.draw(graphics2d);
-		// draw
-		this.currentShape.keepMoving(x, y);
-		this.currentShape.draw(graphics2d);
-	}
-	private void finishMoving(int x, int y) {
-		if (this.selectedShape!=null) {
-			this.selectedShape.setSelected(false);
-		}
-		
-		if (!(this.currentShape instanceof TSelection)) {
-			this.selectedShape = this.currentShape;
-			this.selectedShape.setSelected(true);
-			this.selectedShape.draw((Graphics2D) this.getGraphics());
 		}
 		
 		this.repaint();
 	}	
-
 
 	private TShape onShape(int x, int y) {
 		for (TShape shape: this.shapes ) {
@@ -205,68 +202,51 @@ public class DrawingPanel extends JPanel {
 		private void lButtonClicked(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdle) {
 				changeSelection(e.getX(), e.getY());
-				if (selectedTool == ETools.ePolygon) {
-					prepareDrawing(e.getX(), e.getY());
+				if (selectedTool.getTransformationStyle() == ETransformationStyle.eNPTransformation) {
+					prepareTransforming(e.getX(), e.getY());
 					eDrawingState = EDrawingState.eNPointDrawing;
 				}
 			} else if (eDrawingState == EDrawingState.eNPointDrawing) {
-				continueDrawing(e.getX(), e.getY());
+				continueTransforming(e.getX(), e.getY());
 			}
 		}
 		private void lButtonDoubleClicked(MouseEvent e) {			
 			if (eDrawingState == EDrawingState.eNPointDrawing) {
-				finishDrawing(e.getX(), e.getY());
+				finishTransforming(e.getX(), e.getY());
 				eDrawingState = EDrawingState.eIdle;
 			}
 		}
 		@Override
 		public void mouseMoved(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eNPointDrawing) {
-				keepDrawing(e.getX(), e.getY());
+				keepTransforming(e.getX(), e.getY());
 			} else if (eDrawingState == EDrawingState.eIdle) {
 				changeCursor(e.getX(), e.getY());
 			}
 		}
+
 		
 		@Override
 		public void mousePressed(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdle) {
-				if (selectedTool == ETools.eSelection) {
-					currentShape = onShape(e.getX(), e.getY());
-					if (currentShape != null) {	
-						EAnchors eAnchor = currentShape.getSelectedAnchor();
-						if(eAnchor == EAnchors.eMove) {
-							prepareMoving(e.getX(), e.getY());
-							eDrawingState = EDrawingState.eMoving;
-						} else if(eAnchor == EAnchors.eRR) {
-						} else {							
-						}
-					}					
-				} else {
-					if (selectedTool != ETools.ePolygon) {
-						prepareDrawing(e.getX(), e.getY());
-						eDrawingState = EDrawingState.e2PointDrawing;
-					}
+				if (selectedTool.getTransformationStyle() == ETransformationStyle.e2PTransformation) {
+					prepareTransforming(e.getX(), e.getY());
+					eDrawingState = EDrawingState.e2PointDrawing;
 				}
 			}
 		}
 		@Override
 		public void mouseDragged(MouseEvent e) {
 			if (eDrawingState == EDrawingState.e2PointDrawing) {
-				keepDrawing(e.getX(), e.getY());
-			} else if (eDrawingState == EDrawingState.eMoving) {
-				keepMoving(e.getX(), e.getY());
+				keepTransforming(e.getX(), e.getY());
 			}
 		}
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (eDrawingState == EDrawingState.e2PointDrawing) {
-				finishDrawing(e.getX(), e.getY());
+				finishTransforming(e.getX(), e.getY());
 				eDrawingState = EDrawingState.eIdle;
-			} else if (eDrawingState == EDrawingState.eMoving) {
-				finishMoving(e.getX(), e.getY());
-				eDrawingState = EDrawingState.eIdle;
-			}
+			} 
 		}
 
 		@Override

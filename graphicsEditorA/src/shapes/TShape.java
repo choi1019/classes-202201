@@ -51,18 +51,19 @@ abstract public class TShape implements Serializable {
 				return true;
 			}
 		}
-		if(this.shape.contains(x, y)) {
+		Shape transformedShape = this.affineTransform.createTransformedShape(this.shape);
+		if(transformedShape.contains(x, y)) {
 			this.eSelectedAnchor = EAnchors.eMove;
 			return true;
 		}
 		return false;
 	}	
 	public void draw(Graphics2D graphics2D) {
-		graphics2D.setTransform(this.affineTransform);		
-		graphics2D.draw(this.shape);
+		Shape transformedShape = this.affineTransform.createTransformedShape(this.shape);
+		graphics2D.draw(transformedShape);
 		
 		if (isSelected()) {
-			this.anchors.draw(graphics2D, this.shape.getBounds());
+			this.anchors.draw(graphics2D, transformedShape.getBounds());
 		}
 	}
 	
