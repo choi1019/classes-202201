@@ -1,5 +1,6 @@
 package shapes;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
@@ -8,8 +9,8 @@ import java.awt.geom.Point2D;
 
 public class TAnchors {
 	
-	private final static int WIDTH = 15;
-	private final static int HEIGHT = 15;
+	private final static int WIDTH = 10;
+	private final static int HEIGHT = 10;
 	
 	public enum EAnchors {
 		eNW,
@@ -40,12 +41,12 @@ public class TAnchors {
 		}
 	}
 	
-	public boolean contains(int x, int y, AffineTransform affineTransform) {
+	public boolean contains(int x, int y, Rectangle BoundingRectangle, AffineTransform affineTransform) {
 		for (int i=0; i<EAnchors.values().length-1; i++) {			
-			Point2D origin = new Point2D.Double(this.anchors[i].getX(), this.anchors[i].getY());
-			affineTransform.transform(origin, origin);
-			Ellipse2D transformedAnchor = new Ellipse2D.Double(origin.getX(), origin.getY(), this.anchors[i].getWidth(), this.anchors[i].getHeight());
-			if (transformedAnchor.contains(x, y)) {
+//			Point2D origin = new Point2D.Double(this.anchors[i].getX(), this.anchors[i].getY());
+//			affineTransform.transform(origin, origin);
+//			Ellipse2D transformedAnchor = new Ellipse2D.Double(origin.getX(), origin.getY(), this.anchors[i].getWidth(), this.anchors[i].getHeight());
+			if (this.anchors[i].contains(x, y)) {
 				this.eSelectedAnchor = EAnchors.values()[i];				
 				return true;
 			}
@@ -70,8 +71,7 @@ public class TAnchors {
 		return p;
 	}
 
-	
-	public void draw(Graphics2D graphics2D, Rectangle BoundingRectangle, AffineTransform affineTransform) {
+	private void setAnchors(Rectangle BoundingRectangle, AffineTransform affineTransform) {
 		for (int i=0; i<EAnchors.values().length-1; i++) {
 			double x = BoundingRectangle.x - WIDTH/2;
 			double y = BoundingRectangle.y - HEIGHT/2;
@@ -94,10 +94,20 @@ public class TAnchors {
 			
 			this.anchors[i].setFrame(x, y, WIDTH, HEIGHT);
 			
-			Point2D origin = new Point2D.Double(this.anchors[i].getX(), this.anchors[i].getY());
-			affineTransform.transform(origin, origin);
-			Ellipse2D transformedAnchor = new Ellipse2D.Double(origin.getX(), origin.getY(), this.anchors[i].getWidth(), this.anchors[i].getHeight());
-			graphics2D.draw(transformedAnchor);
+//			Point2D origin = new Point2D.Double(this.anchors[i].getX(), this.anchors[i].getY());
+//			affineTransform.transform(origin, origin);
+//			Ellipse2D transformedAnchor = new Ellipse2D.Double(origin.getX(), origin.getY(), this.anchors[i].getWidth(), this.anchors[i].getHeight());
+		}
+	
+	}
+	public void draw(Graphics2D graphics2D, Rectangle BoundingRectangle, AffineTransform affineTransform) {
+		this.setAnchors(BoundingRectangle, affineTransform);
+		for (int i=0; i<EAnchors.values().length-1; i++) {
+			Color forground = graphics2D.getColor();
+			graphics2D.setColor(graphics2D.getBackground());
+			graphics2D.fill(this.anchors[i]);
+			graphics2D.setColor(forground);
+			graphics2D.draw(this.anchors[i]);
 		}
 	}
 }

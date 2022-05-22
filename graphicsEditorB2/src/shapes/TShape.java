@@ -53,12 +53,12 @@ abstract public class TShape implements Serializable {
 	public void addPoint(int x, int y) {}
 
 	public boolean contains(int x, int y) {
+		Shape transformedShape = this.affineTransform.createTransformedShape(this.shape);
 		if (this.bSelected) {
-			if (this.anchors.contains(x, y, this.affineTransform)) {
+			if (this.anchors.contains(x, y, transformedShape.getBounds(), this.affineTransform)) {
 				return true;
 			}
 		}		
-		Shape transformedShape = this.affineTransform.createTransformedShape(this.shape);
 		if(transformedShape.contains(x, y)) {
 			this.anchors.setESelectedAnchor(EAnchors.eMove);
 			return true;
@@ -71,7 +71,7 @@ abstract public class TShape implements Serializable {
 		graphics2D.draw(transformedShape);
 		
 		if (this.bSelected) {
-			this.anchors.draw(graphics2D, this.shape.getBounds(), this.affineTransform);			
+			this.anchors.draw(graphics2D, transformedShape.getBounds(), this.affineTransform);			
 		}
 	}
 
