@@ -18,6 +18,8 @@ import shapes.TSelection;
 import shapes.TShape;
 import transformers.Drawer;
 import transformers.Mover;
+import transformers.Resizer;
+import transformers.Rotator;
 import transformers.Transformer;
 
 public class DrawingPanel extends JPanel {
@@ -83,9 +85,9 @@ public class DrawingPanel extends JPanel {
 				if (currentShape.getSelectedAnchor() == EAnchors.eMove) {
 					this.transformer = new Mover(currentShape);
 				} else if (currentShape.getSelectedAnchor() == EAnchors.eRR) {
-					this.transformer = new Mover(currentShape);
+					this.transformer = new Rotator(currentShape);
 				} else {
-					this.transformer = new Mover(currentShape);
+					this.transformer = new Resizer(currentShape);
 				}
 			} else {
 				this.currentShape = this.selectedTool.newShape();
@@ -197,7 +199,7 @@ public class DrawingPanel extends JPanel {
 		private void lButtonClicked(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdle) {
 				changeSelection(e.getX(), e.getY());
-				if (selectedTool.getETransformationStyle() == ETransformationStyle.e2Point) {
+				if (selectedTool.getETransformationStyle() == ETransformationStyle.eNPoint) {
 					prepareTrnasformation(e.getX(), e.getY());
 					eDrawingState = EDrawingState.eNPointTransformation;
 				}

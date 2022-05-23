@@ -4,17 +4,17 @@ import java.awt.Graphics2D;
 
 import shapes.TShape;
 
-public class Drawer extends Transformer {
-	public Drawer(TShape shape) {
+public class Rotator extends Transformer {
+	public Rotator(TShape shape) {
 		super(shape);
 	}
 	@Override
 	public void prepare(int x, int y, Graphics2D graphics2d) {
-		this.shape.prepareDrawing(x, y);
+		this.shape.prepareMoving(x, y);
 	}
 	@Override
 	public void keepTransforming(int x, int y, Graphics2D graphics2d) {
-		this.shape.keepDrawing(x, y);
+		this.shape.keepMoving(x, y);
 	}
 	@Override
 	public void finalize(int x, int y, Graphics2D graphics2d) {

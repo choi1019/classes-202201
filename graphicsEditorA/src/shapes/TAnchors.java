@@ -1,8 +1,10 @@
 package shapes;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 
 public class TAnchors {
 
@@ -22,6 +24,18 @@ public class TAnchors {
 		eMove
 	}
 	private Ellipse2D anchors[];
+	private EAnchors eSelectedAnchor;
+	private EAnchors eReiszeAnchor;
+	
+	public EAnchors getSelectedAnchor() {
+		return this.eSelectedAnchor;
+	}
+	public void setSelectedAnchor(EAnchors eSelectedAnchor) {
+		this.eSelectedAnchor = eSelectedAnchor;
+	}
+	public EAnchors getResizeAnchor() {
+		return this.eReiszeAnchor;
+	}
 	
 	// constructors
 	public TAnchors() {
@@ -32,13 +46,14 @@ public class TAnchors {
 	}
 	
 	// methods
-	public EAnchors contains(int x, int y) {
+	public boolean contains(int x, int y) {
 		for (int i=0; i<EAnchors.values().length-1; i++) {			
 			if (this.anchors[i].contains(x, y)) {
-				return EAnchors.values()[i];
+				this.eSelectedAnchor = EAnchors.values()[i];
+				return true;
 			}
 		}
-		return null;
+		return false;
 	}
 	
 	public void draw(Graphics2D graphics2D, Rectangle boundingRectangle) {
@@ -68,5 +83,23 @@ public class TAnchors {
 			this.anchors[eAnchor.ordinal()].setFrame(x, y, WIDTH, HEIGHT);
 			graphics2D.draw(this.anchors[eAnchor.ordinal()]);
 		}
+	}
+	
+	public Point2D getResizeAnchorPoint(int x, int y) {
+		this.eReiszeAnchor = null;
+		switch (this.eSelectedAnchor) {
+			case eNW: eReiszeAnchor = EAnchors.eSE; break;
+			case eWW: eReiszeAnchor = EAnchors.eEE; break;				
+			case eSW: eReiszeAnchor = EAnchors.eNE; break;				
+			case eSS: eReiszeAnchor = EAnchors.eNN; break;				
+			case eSE: eReiszeAnchor = EAnchors.eNW; break;				
+			case eEE: eReiszeAnchor = EAnchors.eWW; break;				
+			case eNE: eReiszeAnchor = EAnchors.eSW; break;				
+			case eNN: eReiszeAnchor = EAnchors.eSS; break;				
+			default: break;
+		}
+		double cx = this.anchors[eReiszeAnchor.ordinal()].getCenterX();
+		double cy = this.anchors[eReiszeAnchor.ordinal()].getCenterY();
+		return new Point2D.Double(cx, cy);
 	}
 }
