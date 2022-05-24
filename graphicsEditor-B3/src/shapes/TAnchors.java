@@ -1,10 +1,14 @@
 package shapes;
 
+import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Dimension2D;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
 public class TAnchors {
@@ -43,7 +47,7 @@ public class TAnchors {
 		}
 	}
 	
-	private void setAnchors(Rectangle BoundingRectangle, AffineTransform affineTransform) {		
+	private void setAnchors(Rectangle BoundingRectangle) {		
 		for (int i=0; i<EAnchors.values().length-1; i++) {			
 			double x = BoundingRectangle.x - WIDTH/2.0;
 			double y = BoundingRectangle.y - HEIGHT/2.0;
@@ -64,26 +68,37 @@ public class TAnchors {
 				default:								break;
 			}
 			Point2D point = new Point2D.Double(x, y);
-			affineTransform.transform(point, point);
 			this.anchors[i].setFrame(point.getX(), point.getY(), WIDTH, HEIGHT);
 		}
 	}
 	
 	public boolean contains(int x, int y, Rectangle BoundingRectangle, AffineTransform affineTransform) {
-		this.setAnchors(BoundingRectangle, affineTransform);
-		for (int i=0; i<EAnchors.values().length-1; i++) {
-			if (this.anchors[i].contains(x, y)) {
-				this.eSelectedAnchor = EAnchors.values()[i];
-				return true;
+		try {
+			Point transformedPosition = new Point();
+			affineTransform.inverseTransform(new Point(x, y), transformedPosition);
+			for (int i=0; i<EAnchors.values().length-1; i++) {
+				if (this.anchors[i].contains(transformedPosition.x, transformedPosition.y)) {
+					this.eSelectedAnchor = EAnchors.values()[i];
+					return true;
+				}
 			}
+		} catch (NoninvertibleTransformException e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
 	
 	public void draw(Graphics2D graphics2D, Rectangle BoundingRectangle, AffineTransform affineTransform) {
-		this.setAnchors(BoundingRectangle, affineTransform);
+		this.setAnchors(BoundingRectangle);
+		Point transformedPosition = new Point();
 		for (int i=0; i<EAnchors.values().length-1; i++) {
-			graphics2D.draw(this.anchors[i]);
+			affineTransform.transform(
+					new Point2D.Double(this.anchors[i].getX(), this.anchors[i].getY()), 
+					transformedPosition);
+			Ellipse2D transformedAnchor = new Ellipse2D.Double(
+					transformedPosition.getX(), transformedPosition.getY(), 
+					this.anchors[i].getWidth(), this.anchors[i].getHeight());
+			graphics2D.draw(transformedAnchor);
 		}
 	}
 	

@@ -18,6 +18,7 @@ abstract public class TShape implements Serializable {
 	
 	// working
 	private int px, py;
+	private double cx, cy;
 
 	private AffineTransform affineTransform;
 	
@@ -56,8 +57,7 @@ abstract public class TShape implements Serializable {
 				return true;
 			}
 		}
-		Shape transformedShape = this.affineTransform.createTransformedShape(this.shape);
-		if(transformedShape.contains(x, y)) {
+		if(this.shape.contains(x, y)) {
 			this.anchors.seteSelectedAnchor(EAnchors.eMove);
 			return true;
 		}
@@ -82,8 +82,8 @@ abstract public class TShape implements Serializable {
 	}
 	
 	public void finalizeMoving(int x, int y) {
-		this.shape = this.affineTransform.createTransformedShape(this.shape);
-		this.affineTransform.setToIdentity();
+//		this.shape = this.affineTransform.createTransformedShape(this.shape);
+//		this.affineTransform.setToIdentity();
 	}
 	
 	public void prepareResizing(int x, int y) {
@@ -110,8 +110,28 @@ abstract public class TShape implements Serializable {
 	}
 	
 	public void finalizeResizing() {
-		this.shape = this.affineTransform.createTransformedShape(this.shape);
-		this.affineTransform.setToIdentity();
+//		this.shape = this.affineTransform.createTransformedShape(this.shape);
+//		this.affineTransform.setToIdentity();
+	}
+	
+	public void initRotation(int x, int y) {
+		this.px = x;
+		this.py = y;
+		this.cx = (int) this.shape.getBounds().getCenterX();
+		this.cy = (int) this.shape.getBounds().getCenterY();
+		
+	}
+	public void rotate(int x, int y) {
+		double startAngle = Math.toDegrees(Math.atan2(cx-px, cy-py));
+		double endAngle = Math.toDegrees(Math.atan2(cx-x, cy-y));
+		
+		double rotationAngle = startAngle-endAngle;
+		if (rotationAngle < 0) {
+			rotationAngle += 360;
+		}
+		this.affineTransform.rotate(Math.toRadians(rotationAngle), cx, cy);
+		this.px = x;
+		this.py = y;
 	}
 }
 
