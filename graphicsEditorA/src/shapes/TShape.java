@@ -81,7 +81,10 @@ abstract public class TShape implements Serializable {
 		this.px = x;
 		this.py = y;
 	}
-	
+	public void finalizeMoving(int x, int y) {
+		this.shape = this.affineTransform.createTransformedShape(this.shape);
+		this.affineTransform.setToIdentity();
+	}
 	public void prepareResizing(int x, int y) {
 		this.px = x;
 		this.py = y;
@@ -91,32 +94,37 @@ abstract public class TShape implements Serializable {
 	}	
 	public void keepResizing(int x, int y) {
 		this.getResizeScale(x, y);
-
+		this.affineTransform.translate(cx, cy);
 		this.affineTransform.scale(this.xScale, this.yScale);
+		this.affineTransform.translate(-cx, -cy);
 		this.px = x;
 		this.py = y;
 	}
+	public void finalizeResizing(int x, int y) {
+		this.shape = this.affineTransform.createTransformedShape(this.shape);
+		this.affineTransform.setToIdentity();
+	}
 	protected void getResizeScale(int x, int y) {
 		EAnchors eReiszeAnchor = this.anchors.getResizeAnchor();
-		double xf, yf;
 		double w1 = px - cx;
 		double w2 = x - cx;
 		double h1 = py - cy;
 		double h2 = y - cy;
 		
 		switch (eReiszeAnchor) {
-			case eNW: xf = w2/w1; yf = h2/h2; break;
-			case eWW: xf = w2/w1; yf = 0; break;				
-			case eSW: xf = w2/w1; yf = - h2/h2; break;				
-			case eSS: xf = w2/w1; yf = h2/h2; break;				
-			case eSE: xf = w2/w1; yf = h2/h2; break;				
-			case eEE: xf = w2/w1; yf = h2/h2; break;				
-			case eNE: xf = w2/w1; yf = h2/h2; break;				
-			case eNN: xf = w2/w1; yf = h2/h2; break;				
+			case eNW: xScale = w2/w1; 	yScale = h2/h1; 	break;
+			case eWW: xScale = w2/w1; 	yScale = 1; 		break;				
+			case eSW: xScale = w2/w1; 	yScale = h2/h1; 	break;				
+			case eSS: xScale = 1; 		yScale = h2/h1; 	break;				
+			case eSE: xScale = w2/w1; 	yScale = h2/h1; 	break;				
+			case eEE: xScale = w2/w1; 	yScale = 1; 		break;				
+			case eNE: xScale = w2/w1; 	yScale = h2/h1; 	break;				
+			case eNN: xScale = 1; 		yScale = h2/h1; 	break;				
 			default: break;
 		}
 
 	}
+
 
 }
 

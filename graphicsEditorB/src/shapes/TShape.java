@@ -19,7 +19,7 @@ abstract public class TShape implements Serializable {
 	// working
 	private int px, py;
 	private double cx, cy;
-	private double sx, sy;
+	private double xScale, yScale;
 	
 	private AffineTransform affineTransform;
 	
@@ -85,7 +85,10 @@ abstract public class TShape implements Serializable {
 		this.px = x;
 		this.py = y;			
 	}
-	
+	public void finalizeMoving(int x, int y) {
+		this.shape = this.affineTransform.createTransformedShape(this.shape);
+		this.affineTransform.setToIdentity();
+	}
 	public void prepareResizing(int x, int y) {
 		this.px = x;
 		this.py = y;
@@ -96,51 +99,37 @@ abstract public class TShape implements Serializable {
 	
 	public void keepResizing(int x, int y) {
 		this.getResizeScale(x, y);
-		this.affineTransform.scale(this.sx, this.sy);
+		this.affineTransform.translate(cx, cy);
+		this.affineTransform.scale(this.xScale, this.yScale);
+		this.affineTransform.translate(-cx, -cy);
 		this.px = x;
 		this.py = y;	
 	}
-	
+	public void finalizeResizing(int x, int y) {
+		this.shape = this.affineTransform.createTransformedShape(this.shape);
+		this.affineTransform.setToIdentity();
+		
+	}
 	private void getResizeScale(int x, int y) {
 		EAnchors eReiszeanchor = this.anchors.geteResizeAnchor();
 		double w1 = px-cx;
 		double w2 = x-cx;
+		
 		double h1 = py-cy;
 		double h2 = y-cy;
 		
-		double xf = 1, yf = 1;
 		switch (eReiszeanchor) {
-		case eNW:
-			xf = w2/w1; yf=h2/h1;
-			break;
-		case eWW:
-			xf = w2/w1; yf = 1;
-			break;
-		case eSW:
-			xf = w2/w1; yf=h2/h1;
-			break;
-		case eSS:
-			xf = 1; yf=h2/h1;
-			break;
-		case eSE:
-			xf = w2/w1; yf=h2/h1;
-			break;
-		case eEE:
-			xf = w2/w1; yf=1;
-			break;
-		case eNE:
-			xf = w2/w1; yf=h2/h1;
-			break;
-		case eNN:
-			xf = 1; yf=h2/h1;
-			break;
-		default:
-			break;
+		case eNW: xScale = w2/w1;	yScale = h2/h1;	break;
+		case eWW: xScale = w2/w1; 	yScale = 1;		break;
+		case eSW: xScale = w2/w1; 	yScale = h2/h1;	break;
+		case eSS: xScale = 1; 		yScale = h2/h1;	break;
+		case eSE: xScale = w2/w1;   yScale = h2/h1;	break;
+		case eEE: xScale = w2/w1; 	yScale = 1;		break;
+		case eNE: xScale = w2/w1;   yScale = h2/h1;	break;
+		case eNN: xScale = 1; 		yScale = h2/h1;	break;
+		default:									break;
 		}
-		
-		this.sx = xf;
-		this.sy = yf;
-		
 	}
+
 }
 

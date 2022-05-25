@@ -18,5 +18,6 @@ public class Mover extends Transformer {
 	}
 	@Override
 	public void finalize(int x, int y, Graphics2D graphics2d) {
+		this.shape.finalizeMoving(x, y);
 	}		
 }
