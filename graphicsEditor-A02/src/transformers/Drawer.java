@@ -12,6 +12,6 @@ public class Drawer extends Transformer {
 		this.shape.keepDrawing(x, y);
 	}
 	@Override
-	public void finalize(int x, int y2d) {
+	public void finalize(int x, int y) {
 	}		
 }

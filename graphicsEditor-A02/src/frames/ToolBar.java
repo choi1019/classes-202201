@@ -11,6 +11,7 @@ public class ToolBar extends JToolBar {
 	private static final long serialVersionUID = 1L;
 
 	private DrawingPanel drawingPanel;
+	JRadioButton defaultButton;
 	
 	public ToolBar() {
 
@@ -24,18 +25,24 @@ public class ToolBar extends JToolBar {
 			this.add(drawingTool);		
 			buttonGroup.add(drawingTool);
 		}
+		
+		this.defaultButton = (JRadioButton) this.getComponent(ETools.eSelection.ordinal());
 	}
 	
 	public void associate(DrawingPanel drawingPanel) {
 		this.drawingPanel = drawingPanel;
-		JRadioButton defaultButton = (JRadioButton) this.getComponent(ETools.eSelection.ordinal());
+		this.drawingPanel.setDefaultTool(defaultButton);
+
+	}
+	public void initialize() {
 		defaultButton.doClick();
 	}
-	
 	private class ActionHandler implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			drawingPanel.setSelectedTool(ETools.valueOf(e.getActionCommand()));
 		}	
 	}
+
+
 }

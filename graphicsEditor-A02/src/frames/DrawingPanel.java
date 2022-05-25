@@ -7,21 +7,19 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.util.Vector;
 
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.event.MouseInputListener;
 
 import global.Constants.ETools;
 import global.Constants.ETransformationStyle;
 import global.Constants.ETransformers;
-import shapes.TAnchors.EAnchors;
 import shapes.TSelection;
 import shapes.TShape;
-import transformers.Drawer;
-import transformers.Mover;
-import transformers.Resizer;
-import transformers.Rotator;
 import transformers.Transformer;
 
 public class DrawingPanel extends JPanel {
@@ -32,17 +30,22 @@ public class DrawingPanel extends JPanel {
 	// components
 	private Vector<TShape> shapes;
 	
+	private BufferedImage bufferedImage;
+	private Graphics2D graphics2DBufferedImage;
+	
 	// associated attribute
 	private ETools selectedTool;
 	private TShape selectedShape;
 	private TShape currentShape;
 	private Transformer transformer;
 	
+	private JRadioButton defaultButton;
+	
 	// working variables
 	private enum EDrawingState {
 		eIdle,
 		e2PointDrawing,
-		eNPointDrawing, eMoving, eRotating
+		eNPointDrawing
 	}
 	EDrawingState eDrawingState;
 	
@@ -57,7 +60,18 @@ public class DrawingPanel extends JPanel {
 		this.addMouseMotionListener(mouseHandler);
 		this.addMouseWheelListener(mouseHandler);
 	}
-
+	
+	public void initialize() {
+		this.bufferedImage = (BufferedImage) this.createImage(this.getWidth(), this.getHeight());		
+		this.graphics2DBufferedImage = (Graphics2D)(this.bufferedImage.getGraphics());
+		
+		this.graphics2DBufferedImage.setColor(this.getBackground());
+		this.graphics2DBufferedImage.fillRect(0, 0, this.getWidth(), this.getHeight());
+		
+		this.graphics2DBufferedImage.setColor(this.getForeground());
+		this.graphics2DBufferedImage.setXORMode(this.getBackground());
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void setShapes(Object shapes) {
 		this.shapes = (Vector<TShape>) shapes;
@@ -70,58 +84,63 @@ public class DrawingPanel extends JPanel {
 	public void setSelectedTool(ETools selectedTool) {
 		this.selectedTool = selectedTool;		
 	}
+	public void setDefaultTool(JRadioButton defaultButton) {
+		this.defaultButton = defaultButton;		
+	}
 
 	// overriding
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
-		for (TShape shape:this.shapes) {
-			shape.draw((Graphics2D)graphics);
-		}
+//		for (TShape shape:this.shapes) {
+//			shape.draw((Graphics2D)graphics);
+//		}
+		graphics.drawImage(bufferedImage, 0, 0, this);
 	}	
 	
 	private void prepareTransforming(int x, int y) {
 		if (this.selectedTool == ETools.eSelection ) {
 			currentShape = onShape(x, y);
-			if (currentShape != null) {	
-				ETransformers eTransformer = currentShape.getTransformer();
-				this.transformer = eTransformer.getTransformer();
-			} else {
+			if (currentShape == null) {	
 				this.currentShape = this.selectedTool.newShape();
 				this.transformer = ETransformers.eDrawer.getTransformer();
+			} else {
+				ETransformers eTransformer = currentShape.getTransformer();
+				this.transformer = eTransformer.getTransformer();
 			}
 		} else {
 			this.currentShape = this.selectedTool.newShape();
 			this.transformer = ETransformers.eDrawer.getTransformer();			
 		}
-		this.transformer.setShape(this.currentShape);
 		
-		Graphics2D graphics2D = (Graphics2D) this.getGraphics();
-		graphics2D.setXORMode(this.getBackground());
-		this.transformer.prepareTransforming(x, y, graphics2D);
+		if (this.selectedShape != null) {
+			this.selectedShape.drawAnchors(graphics2DBufferedImage);
+			this.selectedShape.setSelected(false);
+		}
+		this.transformer.setShape(this.currentShape);		
+		this.transformer.prepareTransforming(x, y, graphics2DBufferedImage);
+		this.repaint();
 	}
 	
 	private void keepTransforming(int x, int y) {
-		// erase
-		Graphics2D graphics2D = (Graphics2D) this.getGraphics();
-		graphics2D.setXORMode(this.getBackground());
-		this.transformer.keepTransforming(x, y, graphics2D);
+		this.transformer.keepTransforming(x, y, graphics2DBufferedImage);
+		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
 	}
 	
 	private void continueTransforming(int x, int y) {
-		Graphics2D graphics2D = (Graphics2D) this.getGraphics();
-		graphics2D.setXORMode(this.getBackground());
-		this.transformer.continueTransforming(x, y, graphics2D);
+		this.transformer.continueTransforming(x, y, graphics2DBufferedImage);
 	}
 	
 	private void finalizeTransforming(int x, int y) {
-		Graphics2D graphics2D = (Graphics2D) this.getGraphics();
-		graphics2D.setXORMode(this.getBackground());
-		this.transformer.finalizeTransforming(x, y, graphics2D);
+		this.transformer.finalizeTransforming(x, y, graphics2DBufferedImage);
 		
 		if (!(this.currentShape instanceof TSelection)) {
 			this.shapes.add(this.currentShape);
+			this.selectedShape = this.currentShape;
+			this.selectedShape.setSelected(true);
+			this.selectedShape.drawAnchors(graphics2DBufferedImage);
+			this.defaultButton.doClick();
 		}
-		this.changeSelection();
+		this.repaint();
 	}	
 
 	private TShape onShape(int x, int y) {
@@ -136,13 +155,14 @@ public class DrawingPanel extends JPanel {
 	private void changeSelection() {
 		// erase anchors
 		if (this.selectedShape != null) {
+//			this.selectedShape.drawAnchors(graphics2DBufferedImage);		
 			this.selectedShape.setSelected(false);
 		}
 		// draw anchors
 		this.selectedShape = this.currentShape;
 		if (this.selectedShape != null) {
 			this.selectedShape.setSelected(true);
-			this.selectedShape.draw((Graphics2D) this.getGraphics());
+//			this.selectedShape.drawAnchors(graphics2DBufferedImage);
 		}
 		this.repaint();
 	}
@@ -236,6 +256,4 @@ public class DrawingPanel extends JPanel {
 		}
 	
 	}
-
-
 }

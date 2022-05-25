@@ -1,14 +1,18 @@
 package shapes;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 
 public class TAnchors {
 
-	private final int WIDTH = 15;
-	private final int HEIGHT = 15;
+	private final int WIDTH = 12;
+	private final int HEIGHT = 12;
 	
 	public enum EAnchors {
 		eNW,
@@ -22,7 +26,8 @@ public class TAnchors {
 		eRR,
 		eMove
 	}
-	private Ellipse2D anchors[];
+	private Point2D anchors[];
+	private Dimension dimension;
 	private EAnchors eSelectedAnchor;
 	private EAnchors eReiszeAnchor;
 	
@@ -38,16 +43,19 @@ public class TAnchors {
 	
 	// constructors
 	public TAnchors() {
-		this.anchors = new Ellipse2D[EAnchors.values().length-1];
+		this.anchors = new Point2D[EAnchors.values().length-1];
 		for (int i=0; i<EAnchors.values().length-1; i++) {
-			this.anchors[i] = new Ellipse2D.Double();
+			this.anchors[i] = new Point2D.Double();
 		}
+		this.dimension = new Dimension(WIDTH, HEIGHT);
 	}
 	
 	// methods
 	public boolean contains(int x, int y) {
-		for (int i=0; i<EAnchors.values().length-1; i++) {			
-			if (this.anchors[i].contains(x, y)) {
+		Ellipse2D ellipse = new Ellipse2D.Double();
+		for (int i=0; i<EAnchors.values().length-1; i++) {
+			ellipse.setFrame(this.anchors[i], dimension);
+			if (ellipse.contains(x, y)) {
 				this.eSelectedAnchor = EAnchors.values()[i];
 				return true;
 			}
@@ -59,10 +67,10 @@ public class TAnchors {
 		
 		for (int i=0; i<EAnchors.values().length-1; i++) {
 			EAnchors eAnchor = EAnchors.values()[i];
-			int x =  boundingRectangle.x;
-			int y =  boundingRectangle.y;
-			int w =  boundingRectangle.width;
-			int h =  boundingRectangle.height;
+			double x =  boundingRectangle.x;
+			double y =  boundingRectangle.y;
+			double w =  boundingRectangle.width;
+			double h =  boundingRectangle.height;
 			
 			switch (eAnchor) {
 				case eNW:							break;
@@ -76,11 +84,28 @@ public class TAnchors {
 				case eRR:	x = x+w/2;	y = y-50;	break;
 				default:							break;
 			}
-			x = x - WIDTH/2;
-			y = y - HEIGHT/2;
+			x = x-WIDTH/2;
+			y = y-HEIGHT/2;
+
+			this.anchors[i].setLocation(x, y);
+		
+			Ellipse2D ellipse = new Ellipse2D.Double();
+			ellipse.setFrame(this.anchors[i], dimension);
 			
-			this.anchors[eAnchor.ordinal()].setFrame(x, y, WIDTH, HEIGHT);
-			graphics2D.draw(this.anchors[eAnchor.ordinal()]);
+//			double scaleX = affineTransform.getScaleX();
+//			double scaleY = affineTransform.getScaleY();
+//			affineTransform.setToScale(1.0, 1.0);
+//			graphics2D.setTransform(affineTransform);
+			
+			Color color = graphics2D.getColor();
+			graphics2D.setColor(graphics2D.getBackground());
+			graphics2D.fill(ellipse);
+			graphics2D.setColor(color);
+			graphics2D.draw(ellipse);
+			
+//			affineTransform.setToScale(scaleX, scaleY);
+//			graphics2D.setTransform(affineTransform);
+
 		}
 	}
 	

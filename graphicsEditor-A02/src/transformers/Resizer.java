@@ -17,8 +17,7 @@ public class Resizer extends Transformer {
 		this.cx = resizeAnchorPoint.x;
 		this.cy = resizeAnchorPoint.y;
 		
-		this.px = x;
-		this.py = y;
+
 	}	
 	@Override
 	public void transform(int x, int y) {
@@ -47,9 +46,6 @@ public class Resizer extends Transformer {
 		this.affineTransform.translate(cx, cy);
 		this.affineTransform.scale(xScale, yScale);
 		this.affineTransform.translate(-cx, -cy);
-		
-		this.px = x;
-		this.py = y;
 	}
 	@Override
 	public void finalize(int x, int y) {
