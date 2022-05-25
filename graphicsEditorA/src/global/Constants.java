@@ -9,27 +9,6 @@ import shapes.TPolygon;
 
 public class Constants {
 	
-<<<<<<< HEAD
-	public enum ETools { 
-		eSelection("선택", new TSelection()),
-		eRectanble("네모", new TRectangle()),
-		eOval("동그라미", new TOval()),
-		eLine("라인", new TLine()),
-		ePolygon("다각형", new TPolygon());
-		
-		private String label;
-		private TShape tool;
-		
-		private ETools(String label, TShape tool) {
-			this.label = label;
-			this.tool = tool;
-		}
-		public String getLabel() {
-			return this.label;
-		}
-		public TShape newShape() {
-			return this.tool.clone();
-=======
 	public enum ETransformationStyle {
 		e2Point, 
 		eNPoint
@@ -56,9 +35,8 @@ public class Constants {
 		public TShape newShape() {
 			return this.tool.clone();
 		}
-		public ETransformationStyle getETransformationStyle() {
+		public ETransformationStyle getTransformationStyle() {
 			return this.eTransformationStyle;
->>>>>>> branch '202201' of https://github.com/choi1019/graphicsEditor.git
 		}
 	}
 	

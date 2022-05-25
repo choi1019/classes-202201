@@ -53,27 +53,6 @@ abstract public class TShape implements Serializable {
 	public void addPoint(int x, int y) {}
 
 	public boolean contains(int x, int y) {
-<<<<<<< HEAD
-		Shape transformedShape = this.affineTransform.createTransformedShape(this.shape);
-		if (this.bSelected) {
-			if (this.anchors.contains(x, y, transformedShape.getBounds(), this.affineTransform)) {
-				return true;
-			}
-		}		
-		if(transformedShape.contains(x, y)) {
-			this.anchors.setESelectedAnchor(EAnchors.eMove);
-			return true;
-		}
-		return false;
-	}
-	
-	public void draw(Graphics2D graphics2D) {
-		Shape transformedShape = this.affineTransform.createTransformedShape(this.shape);
-		graphics2D.draw(transformedShape);
-		
-		if (this.bSelected) {
-			this.anchors.draw(graphics2D, transformedShape.getBounds(), this.affineTransform);			
-=======
 		if (this.bSelected) {
 			if (this.anchors.contains(x, y, this.affineTransform)) {
 				return true;
@@ -93,7 +72,6 @@ abstract public class TShape implements Serializable {
 		
 		if (this.bSelected) {
 			this.anchors.draw(graphics2D, this.shape.getBounds(), this.affineTransform);			
->>>>>>> branch '202201' of https://github.com/choi1019/graphicsEditor.git
 		}
 	}
 
