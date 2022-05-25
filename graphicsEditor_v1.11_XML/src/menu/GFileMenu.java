@@ -29,7 +29,11 @@ public class GFileMenu extends GMenu {
  	
 	public GFileMenu() {
 		super(EFileMenuItem.values());
+<<<<<<< HEAD
 	}
+=======
+	} 
+>>>>>>> branch '202201' of https://github.com/choi1019/graphicsEditor.git
 	
 	@Override
 	public void initialize(GDrawingPanel drawingPanel) {

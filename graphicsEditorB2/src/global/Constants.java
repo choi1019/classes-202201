@@ -17,7 +17,11 @@ public class Constants {
 	
 	public enum ETools { 
 		eSelection("선택", new TSelection(), EDrawingStyle.e2Point),
+<<<<<<< HEAD
 		eRectangle("네모", new TRectangle(), EDrawingStyle.e2Point),
+=======
+		eRectanble("네모", new TRectangle(), EDrawingStyle.e2Point),
+>>>>>>> branch '202201' of https://github.com/choi1019/graphicsEditor.git
 		eOval("동그라미", new TOval(), EDrawingStyle.e2Point),
 		eLine("라인", new TLine(), EDrawingStyle.e2Point),
 		ePolygon("폴리곤", new TPolygon(), EDrawingStyle.eNPoint);

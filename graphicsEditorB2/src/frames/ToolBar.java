@@ -30,7 +30,11 @@ public class ToolBar extends JToolBar {
 	
 	public void associate(DrawingPanel drawingPanel) {
 		this.drawingPanel = drawingPanel;
+<<<<<<< HEAD
 		JRadioButton defaultButton = (JRadioButton) this.getComponent(ETools.eRectangle.ordinal());
+=======
+		JRadioButton defaultButton = (JRadioButton) this.getComponent(ETools.eSelection.ordinal());
+>>>>>>> branch '202201' of https://github.com/choi1019/graphicsEditor.git
 		defaultButton.doClick();	
 	}
 	

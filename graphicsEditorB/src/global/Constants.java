@@ -10,6 +10,7 @@ import shapes.TShape;
 
 public class Constants {
 	
+<<<<<<< HEAD
 	public enum ETools { 
 		eSelection("선택", new TSelection()),
 		eRectanble("네모", new TRectangle()),
@@ -28,6 +29,36 @@ public class Constants {
 		}
 		public TShape newShape() {
 			return this.tool.clone();
+=======
+	public enum ETransformationStyle {
+		e2PTransformation,
+		eNPTransformation
+	}
+	public enum ETools { 
+		eSelection("선택", new TSelection(), ETransformationStyle.e2PTransformation),
+		eRectanble("네모", new TRectangle(), ETransformationStyle.e2PTransformation),
+		eOval("동그라미", new TOval(), ETransformationStyle.e2PTransformation),
+		eLine("라인", new TLine(), ETransformationStyle.e2PTransformation),
+		ePolygon("폴리곤", new TPolygon(), ETransformationStyle.eNPTransformation);
+		
+		private String label;
+		private TShape tool;
+		private ETransformationStyle eTransformationStyle;
+		
+		private ETools(String label, TShape tool, ETransformationStyle eTransformationStyle) {
+			this.label = label;
+			this.tool = tool;
+			this.eTransformationStyle = eTransformationStyle;
+		}
+		public String getLabel() {
+			return this.label;
+		}
+		public TShape newShape() {
+			return this.tool.clone();
+		}
+		public ETransformationStyle getTransformationStyle() {
+			return eTransformationStyle;
+>>>>>>> branch '202201' of https://github.com/choi1019/graphicsEditor.git
 		}
 	}
 	
