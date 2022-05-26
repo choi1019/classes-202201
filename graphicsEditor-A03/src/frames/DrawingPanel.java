@@ -7,7 +7,6 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.Vector;
 
@@ -98,33 +97,34 @@ public class DrawingPanel extends JPanel {
 	}	
 	
 	private void prepareTransforming(int x, int y) {
+		// select transformer
 		if (this.selectedTool == ETools.eSelection ) {
-			currentShape = onShape(x, y);
-			if (currentShape == null) {	
+			this.currentShape = onShape(x, y);
+			if (this.currentShape == null) {	
 				this.currentShape = this.selectedTool.newShape();
 				this.transformer = ETransformers.eDrawer.getTransformer();
 			} else {
-				ETransformers eTransformer = currentShape.getTransformer();
+				ETransformers eTransformer = currentShape.getETransformer();
 				this.transformer = eTransformer.getTransformer();
 			}
 		} else {
 			this.currentShape = this.selectedTool.newShape();
 			this.transformer = ETransformers.eDrawer.getTransformer();			
-		}
+		}		
+		this.transformer.setShape(this.currentShape);
+		this.transformer.prepareTransforming(x, y, graphics2DBufferedImage);
 		
+		// set selected false
 		if (this.selectedShape != null) {
 			this.selectedShape.drawAnchors(graphics2DBufferedImage);
 			this.selectedShape.setSelected(false);
 		}
-		this.transformer.setShape(this.currentShape);		
-		this.transformer.prepareTransforming(x, y, graphics2DBufferedImage);
 		this.repaint();
 	}
 	
 	private void keepTransforming(int x, int y) {
 		this.transformer.keepTransforming(x, y, graphics2DBufferedImage);
-		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
-	}
+		this.repaint();	}
 	
 	private void continueTransforming(int x, int y) {
 		this.transformer.continueTransforming(x, y, graphics2DBufferedImage);
@@ -136,8 +136,9 @@ public class DrawingPanel extends JPanel {
 		if (!(this.currentShape instanceof TSelection)) {
 			this.shapes.add(this.currentShape);
 			this.selectedShape = this.currentShape;
-			this.selectedShape.setSelected(true);
 			this.selectedShape.drawAnchors(graphics2DBufferedImage);
+			this.selectedShape.setSelected(true);
+			
 			this.defaultButton.doClick();
 		}
 		this.repaint();
@@ -150,21 +151,6 @@ public class DrawingPanel extends JPanel {
 			}
 		}
 		return null;
-	}
-	
-	private void changeSelection() {
-		// erase anchors
-		if (this.selectedShape != null) {
-//			this.selectedShape.drawAnchors(graphics2DBufferedImage);		
-			this.selectedShape.setSelected(false);
-		}
-		// draw anchors
-		this.selectedShape = this.currentShape;
-		if (this.selectedShape != null) {
-			this.selectedShape.setSelected(true);
-//			this.selectedShape.drawAnchors(graphics2DBufferedImage);
-		}
-		this.repaint();
 	}
 	
 	private void changeCursor(int x, int y) {
@@ -196,10 +182,8 @@ public class DrawingPanel extends JPanel {
 		
 		private void lButtonClicked(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdle) {
-				currentShape = onShape(e.getX(), e.getY());
-				changeSelection();
+				prepareTransforming(e.getX(), e.getY());
 				if (selectedTool.getTransformationStyle() == ETransformationStyle.eNPoint) {
-					prepareTransforming(e.getX(), e.getY());
 					eDrawingState = EDrawingState.eNPointDrawing;
 				}
 			} else if (eDrawingState == EDrawingState.eNPointDrawing) {
@@ -225,8 +209,8 @@ public class DrawingPanel extends JPanel {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdle) {
+				prepareTransforming(e.getX(), e.getY());
 				if (selectedTool.getTransformationStyle() == ETransformationStyle.e2Point) {
-					prepareTransforming(e.getX(), e.getY());
 					eDrawingState = EDrawingState.e2PointDrawing;
 				}
 			}
