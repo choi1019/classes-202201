@@ -23,7 +23,7 @@ import transformers.Resizer;
 import transformers.Rotator;
 import transformers.Transformer;
 
-public class DrawingPanel extends JPanel {
+public class DrawingPanel extends JPanel { 
 
 	// attributes
 	private static final long serialVersionUID = 1L;
