@@ -10,11 +10,11 @@ public class Rotator extends Transformer {
 	}
 	@Override
 	public void prepare(int x, int y, Graphics2D graphics2d) {
-		this.shape.prepareMoving(x, y);
+
 	}
 	@Override
 	public void keepTransforming(int x, int y, Graphics2D graphics2d) {
-		this.shape.keepMoving(x, y);
+
 	}
 	@Override
 	public void finalize(int x, int y, Graphics2D graphics2d) {

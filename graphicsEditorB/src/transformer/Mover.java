@@ -12,17 +12,19 @@ public class Mover extends Transformer {
 
 	@Override
 	public void prepare(int x, int y, Graphics2D graphics2D) {
-		this.selectedShape.prepareMoving(x, y);
+		this.px = x;
+		this.py = y;	
 	}
 
 	@Override
 	public void keepTransforming(int x, int y, Graphics2D graphics2D) {
-		this.selectedShape.keepMoving(x, y);
+		this.affineTransform.translate(x-this.px, y-this.py);
+		this.px = x;
+		this.py = y;	
 	}
 
 	@Override
 	public void finalize(int x, int y, Graphics2D graphics2D) {
-		this.selectedShape.finalizeMoving(x, y);
 	}
 
 }
