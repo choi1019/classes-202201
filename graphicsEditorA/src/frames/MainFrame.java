@@ -29,4 +29,10 @@ public class MainFrame extends JFrame {
 		this.toolBar.associate(this.drawingPanel);
 	}
 
+	public void initialize() {
+		this.menuBar.initialize();
+		this.toolBar.initialize();
+		this.drawingPanel.initialize();
+	}
+
 }

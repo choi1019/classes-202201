@@ -35,6 +35,9 @@ public class FileMenu extends JMenu {
 	public void associate(DrawingPanel drawingPanel) {
 		this.drawingPanel = drawingPanel;
 	}
+
+	public void initialize() {
+	}
 	
 	private void open() {
 		try {
@@ -75,4 +78,5 @@ public class FileMenu extends JMenu {
 			}			
 		}
 	}
+
 }
