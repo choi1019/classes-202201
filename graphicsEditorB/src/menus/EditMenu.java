@@ -36,4 +36,7 @@ public class EditMenu extends JMenu {
 		this.unGroupItem = new JMenuItem("ungroup");
 		this.add(this.unGroupItem);
 	}
+
+	public void initialize() {
+	}
 }

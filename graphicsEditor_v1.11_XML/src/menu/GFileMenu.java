@@ -51,7 +51,7 @@ public class GFileMenu extends GMenu {
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
 	}	
 	private void writeObject() {
 		try {
