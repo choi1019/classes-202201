@@ -33,6 +33,8 @@ public class ToolBar extends JToolBar {
 		JRadioButton defaultButton = (JRadioButton) this.getComponent(ETools.eSelection.ordinal());
 		defaultButton.doClick();	
 	}
+	public void initialize() {
+	}
 	
 	private class ActionHandler implements ActionListener {
 		@Override
@@ -40,4 +42,6 @@ public class ToolBar extends JToolBar {
 			drawingPanel.setSelectedTool(ETools.valueOf(e.getActionCommand()));
 		}	
 	}
+
+
 }

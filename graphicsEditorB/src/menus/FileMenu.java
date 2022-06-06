@@ -35,6 +35,11 @@ public class FileMenu extends JMenu {
 	public void associate(DrawingPanel drawingPanel) {
 		this.drawingPanel = drawingPanel;		
 	}
+	
+	public void initialize() {
+		// TODO Auto-generated method stub
+		
+	}
 
 	private void store() {
 		try {
