@@ -81,11 +81,21 @@ public class DrawingPanel extends JPanel {
 	// overriding
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
-//		for (TShape shape:this.shapes) {
-//			shape.draw((Graphics2D)graphics);
-//		}
+		this.graphics2DBufferedImage.clearRect(0, 0, 
+				this.bufferedImage.getWidth(), this.bufferedImage.getHeight());
+		for (TShape shape:this.shapes) {
+			shape.draw(this.graphics2DBufferedImage);
+		}
 		graphics.drawImage(this.bufferedImage, 0, 0, this);
-	}	
+	}
+	
+	public void drawAll() {
+		this.graphics2DBufferedImage.clearRect(0, 0, 
+				this.bufferedImage.getWidth(), this.bufferedImage.getHeight());
+		for (TShape shape:this.shapes) {
+			shape.draw(this.graphics2DBufferedImage);
+		}
+	}
 	
 	private void prepareTransforming(int x, int y) {
 		if (selectedTool == ETools.eSelection) {
@@ -108,7 +118,6 @@ public class DrawingPanel extends JPanel {
 			this.transformer = new Drawer(this.currentShape);
 		}
 		
-		this.graphics2DBufferedImage.setXORMode(this.getBackground());
 		this.transformer.prepare(x, y, this.graphics2DBufferedImage);
 	}
 	
@@ -119,7 +128,9 @@ public class DrawingPanel extends JPanel {
 		// draw
 		this.transformer.keepTransforming(x, y, this.graphics2DBufferedImage);
 		this.currentShape.draw(this.graphics2DBufferedImage);
-		this.repaint();
+		this.graphics2DBufferedImage.setPaintMode();
+
+		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
 	}
 	
 	private void continueTransforming(int x, int y) {
@@ -127,7 +138,6 @@ public class DrawingPanel extends JPanel {
 	}
 	
 	private void finishTransforming(int x, int y) {
-		this.graphics2DBufferedImage.setXORMode(this.getBackground());
 		this.transformer.finalize(x, y, this.graphics2DBufferedImage);
 		
 		if (this.selectedShape!=null) {
@@ -138,8 +148,7 @@ public class DrawingPanel extends JPanel {
 			this.shapes.add(this.currentShape);
 			this.selectedShape = this.currentShape;
 			this.selectedShape.setSelected(true);
-		}
-		
+		}	
 		this.repaint();
 	}	
 

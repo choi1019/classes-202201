@@ -65,39 +65,30 @@ abstract public class TShape implements Serializable {
 	}
 	
 	// methods
-	public boolean contains(int x, int y) {
-		try {
-			Point point = new Point(x, y);
-			this.affineTransform.inverseTransform(point, point);
-			x = point.x;
-			y = point.y;
-			
-			if (isSelected()) {
-				if (this.anchors.contains(x, y)) {
-					return true;
-				}
-			}
-			if(this.shape.contains(x, y)) {
-				this.anchors.setSelectedAnchor(EAnchors.eMove);
+	public boolean contains(int x, int y) {		
+		if (isSelected()) {
+			if (this.anchors.contains(x, y)) {
 				return true;
 			}
-		} catch (NoninvertibleTransformException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}
+		Shape transformedShape = this.affineTransform.createTransformedShape(this.shape);
+		if(transformedShape.contains(x, y)) {
+			this.anchors.setSelectedAnchor(EAnchors.eMove);
+			return true;
 		}
 		return false;
 	}
 	
 	public void draw(Graphics2D graphics2D) {
-		graphics2D.setTransform(this.affineTransform);
-		graphics2D.draw(this.shape);		
+		Shape transformedShape = this.affineTransform.createTransformedShape(this.shape);
+		graphics2D.draw(transformedShape);		
 		if (isSelected()) {
-			this.anchors.draw(graphics2D, this.shape.getBounds());
+			this.anchors.draw(graphics2D, this.shape.getBounds(), this.affineTransform);
 		}
 	}
 
 	public void drawAnchors(Graphics2D graphics2D) {
-		this.anchors.draw(graphics2D, this.shape.getBounds());
+		this.anchors.draw(graphics2D, this.shape.getBounds(), this.affineTransform);
 	}	
 	
 	public abstract void prepareDrawing(int x, int y);

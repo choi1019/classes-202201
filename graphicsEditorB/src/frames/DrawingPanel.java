@@ -81,10 +81,12 @@ public class DrawingPanel extends JPanel {
 
 	// overriding
 	public void paint(Graphics graphics) {
-		super.paint(graphics);
+		super.paint(graphics);		
+//		this.graphics2DBufferedImage.clearRect(0, 0, 
+//				this.bufferedImage.getWidth(), this.bufferedImage.getHeight());
 //		for (TShape shape:this.shapes) {
-//			shape.draw((Graphics2D)graphics);
-//		}
+//			shape.draw(this.graphics2DBufferedImage);
+//		}		
 		graphics.drawImage(this.bufferedImage, 0, 0, this);
 	}	
 	

@@ -17,14 +17,13 @@ public class MainFrame extends JFrame {
 		this.menuBar = new MenuBar();
 		this.setJMenuBar(this.menuBar);
 		
-		Container contentPane = this.getContentPane();
-		contentPane.setLayout(new BorderLayout());
+		this.setLayout(new BorderLayout());
 		
 		this.toolBar = new ToolBar();
-		contentPane.add(this.toolBar, BorderLayout.NORTH);
+		this.add(this.toolBar, BorderLayout.NORTH);
 		
 		this.drawingPanel = new DrawingPanel();
-		contentPane.add(this.drawingPanel, BorderLayout.CENTER);
+		this.add(this.drawingPanel, BorderLayout.CENTER);
 		
 		this.menuBar.associate(this.drawingPanel);
 		this.toolBar.associate(this.drawingPanel);

@@ -1,6 +1,5 @@
 package transformers;
 
-import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
 import shapes.TAnchors;
@@ -21,28 +20,25 @@ public abstract class Transformer {
 		this.anchors = this.shape.getAnchors();
 	}
 	
-	public void prepareTransforming(int x, int y, Graphics2D graphics2D) {
+	public void prepareTransforming(int x, int y) {
 		this.shape.setSelected(false);	
 		this.prepare(x, y);
 		
 		this.px = x;
 		this.py = y;
 	}
-	public void keepTransforming(int x, int y, Graphics2D graphics2D) {
-		this.shape.draw(graphics2D);
+	public void keepTransforming(int x, int y) {
 		this.transform(x, y);
-		this.shape.draw(graphics2D);
-		
+	
 		this.px = x;
 		this.py = y;
 	}
 
-	public void finalizeTransforming(int x, int y, Graphics2D graphics2D) {
+	public void finalizeTransforming(int x, int y) {
 		this.shape.setSelected(true);
 		this.finalize(x, y);
-//		this.shape.drawAnchors(graphics2D);
 	}
-	public void continueTransforming (int x, int y, Graphics2D graphics2D) {
+	public void continueTransforming (int x, int y) {
 		this.shape.addPoint(x, y);
 	}
 	

@@ -39,8 +39,6 @@ public class DrawingPanel extends JPanel {
 	private TShape currentShape;
 	private Transformer transformer;
 	
-	private JRadioButton defaultButton;
-	
 	// working variables
 	private enum EDrawingState {
 		eIdle,
@@ -62,14 +60,8 @@ public class DrawingPanel extends JPanel {
 	}
 	
 	public void initialize() {
-		this.bufferedImage = (BufferedImage) this.createImage(this.getWidth(), this.getHeight());		
-		this.graphics2DBufferedImage = (Graphics2D)(this.bufferedImage.getGraphics());
-		
-		this.graphics2DBufferedImage.setColor(this.getBackground());
-		this.graphics2DBufferedImage.fillRect(0, 0, this.getWidth(), this.getHeight());
-		
-		this.graphics2DBufferedImage.setColor(this.getForeground());
-		this.graphics2DBufferedImage.setXORMode(this.getBackground());
+		this.bufferedImage = (BufferedImage) this.createImage(this.getWidth(), this.getHeight());
+		this.graphics2DBufferedImage = (Graphics2D) this.bufferedImage.getGraphics();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -79,22 +71,20 @@ public class DrawingPanel extends JPanel {
 	}
 	public Object getShapes() {
 		return this.shapes;		
-	}
-	
+	}	
 	public void setSelectedTool(ETools selectedTool) {
 		this.selectedTool = selectedTool;		
-	}
-	public void setDefaultTool(JRadioButton defaultButton) {
-		this.defaultButton = defaultButton;		
 	}
 
 	// overriding
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
-//		for (TShape shape:this.shapes) {
-//			shape.draw((Graphics2D)graphics);
-//		}
-		graphics.drawImage(bufferedImage, 0, 0, this);
+		this.graphics2DBufferedImage.clearRect(0, 0, 
+				this.bufferedImage.getWidth(), this.bufferedImage.getHeight());
+		for (TShape shape:this.shapes) {
+			shape.draw(this.graphics2DBufferedImage);
+		}
+		graphics.drawImage(this.bufferedImage, 0, 0, this);
 	}	
 	
 	private void prepareTransforming(int x, int y) {
@@ -113,33 +103,39 @@ public class DrawingPanel extends JPanel {
 		}
 		
 		if (this.selectedShape != null) {
-			this.selectedShape.drawAnchors(graphics2DBufferedImage);
 			this.selectedShape.setSelected(false);
 		}
 		this.transformer.setShape(this.currentShape);		
-		this.transformer.prepareTransforming(x, y, graphics2DBufferedImage);
-		this.repaint();
+		this.transformer.prepareTransforming(x, y);
 	}
 	
 	private void keepTransforming(int x, int y) {
-		this.transformer.keepTransforming(x, y, graphics2DBufferedImage);
+		this.graphics2DBufferedImage.setXORMode(this.getBackground());
+		this.currentShape.draw(this.graphics2DBufferedImage);
+		// draw
+		this.transformer.keepTransforming(x, y);
+		this.currentShape.draw(this.graphics2DBufferedImage);
+		this.graphics2DBufferedImage.setPaintMode();
+
 		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
 	}
 	
 	private void continueTransforming(int x, int y) {
-		this.transformer.continueTransforming(x, y, graphics2DBufferedImage);
+		this.transformer.continueTransforming(x, y);
 	}
 	
 	private void finalizeTransforming(int x, int y) {
-		this.transformer.finalizeTransforming(x, y, graphics2DBufferedImage);
+		this.transformer.finalizeTransforming(x, y);
+		
+		if (this.selectedShape!=null) {
+			this.selectedShape.setSelected(false);
+		}
 		
 		if (!(this.currentShape instanceof TSelection)) {
 			this.shapes.add(this.currentShape);
 			this.selectedShape = this.currentShape;
 			this.selectedShape.setSelected(true);
-			this.selectedShape.drawAnchors(graphics2DBufferedImage);
-			this.defaultButton.doClick();
-		}
+		}	
 		this.repaint();
 	}	
 
