@@ -16,7 +16,7 @@ abstract public class TShape implements Serializable {
 	// attributes
 	private static final long serialVersionUID = 1L;
 	// components
-	protected Shape shape, transformedShape;
+	protected Shape shape;
 	protected TAnchors anchors;
 	protected AffineTransform affineTransform;
 	// working
@@ -25,7 +25,8 @@ abstract public class TShape implements Serializable {
 	// constructor
 	public TShape() {
 		this.affineTransform = new AffineTransform();
-		this.affineTransform.setToIdentity();	
+		this.affineTransform.setToIdentity();
+		
 		this.anchors = new TAnchors();
 		this.bSelected = false;
 	}
@@ -46,7 +47,7 @@ abstract public class TShape implements Serializable {
 	public void setSelected(boolean bSelected) {
 		this.bSelected = bSelected;
 	}	
-	public ETransformers getETransformer() {
+	public ETransformers getTransformer() {
 		EAnchors eAnchor = this.anchors.getSelectedAnchor();
 		if(eAnchor == EAnchors.eMove) {
 			return ETransformers.eMover;
@@ -66,36 +67,40 @@ abstract public class TShape implements Serializable {
 	
 	// methods
 	public boolean contains(int x, int y) {
-//		this.transformedShape = this.affineTransform.createTransformedShape(this.shape);
-			
-		if (isSelected()) {
-			if (this.anchors.contains(x, y, this.getBounds(), this.affineTransform)) {
+		try {
+			Point point = new Point(x, y);
+			this.affineTransform.inverseTransform(point, point);
+			x = point.x;
+			y = point.y;
+
+			if (isSelected()) {
+				if (this.anchors.contains(x, y)) {
+					return true;
+				}
+			}
+//			Shape transformedShape = this.affineTransform.createTransformedShape(this.shape);
+			if(this.shape.contains(x, y)) {
+				this.anchors.setSelectedAnchor(EAnchors.eMove);
 				return true;
 			}
+		} catch (NoninvertibleTransformException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		if(this.transformedShape.contains(x, y)) {
-			this.anchors.setSelectedAnchor(EAnchors.eMove);
-			return true;
-		}
-
 		return false;
 	}
 	
 	public void draw(Graphics2D graphics2D) {
-		this.transformedShape = this.affineTransform.createTransformedShape(this.shape);
-		graphics2D.draw(this.transformedShape);		
+//		Shape transformedShape = this.affineTransform.createTransformedShape(this.shape);
+		graphics2D.setTransform(this.affineTransform);
+		graphics2D.draw(this.shape);		
 		if (isSelected()) {
-			this.anchors.draw(graphics2D, this.shape.getBounds(), this.affineTransform);
+			this.anchors.draw(graphics2D, this.shape.getBounds());
 		}
 	}
-
-	public void drawAnchors(Graphics2D graphics2D) {
-		this.anchors.draw(graphics2D, this.shape.getBounds(), this.affineTransform);
-	}	
 	
 	public abstract void prepareDrawing(int x, int y);
 	public abstract void keepDrawing(int x, int y);
-	public void finalizeDrawing(int x, int y) {}
 	public void addPoint(int x, int y) {}
 
 	public Cursor getCursor() {		

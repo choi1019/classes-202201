@@ -81,7 +81,7 @@ abstract public class TShape implements Serializable {
 		Shape transformedShape = this.affineTransform.createTransformedShape(this.shape);
 		graphics2D.draw(transformedShape);		
 		if (isSelected()) {
-			this.anchors.draw(graphics2D, this.shape.getBounds(), this.affineTransform);
+			this.anchors.draw(graphics2D, transformedShape.getBounds(), this.affineTransform);
 		}
 	}
 

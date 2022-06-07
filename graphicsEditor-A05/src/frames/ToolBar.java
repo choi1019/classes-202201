@@ -24,19 +24,19 @@ public class ToolBar extends JToolBar {
 			drawingTool.addActionListener(actionHandler);
 			this.add(drawingTool);		
 			buttonGroup.add(drawingTool);
-		}
-		
+		}		
 		this.defaultButton = (JRadioButton) this.getComponent(ETools.eSelection.ordinal());
 	}
 	
 	public void associate(DrawingPanel drawingPanel) {
 		this.drawingPanel = drawingPanel;
-		this.drawingPanel.setDefaultTool(defaultButton);
+		this.defaultButton.doClick();
+	}
+	
+	public void initialize() {
 
 	}
-	public void initialize() {
-		defaultButton.doClick();
-	}
+	
 	private class ActionHandler implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {

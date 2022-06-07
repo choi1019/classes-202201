@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 
@@ -26,7 +25,8 @@ public class TAnchors {
 		eRR,
 		eMove
 	}
-	private Point2D anchors[], transformedAnchors[];
+	private Point2D anchors[];
+
 	private Dimension dimension;
 	private EAnchors eSelectedAnchor;
 	private EAnchors eReiszeAnchor;
@@ -47,18 +47,14 @@ public class TAnchors {
 		for (int i=0; i<EAnchors.values().length-1; i++) {
 			this.anchors[i] = new Point2D.Double();
 		}
-		this.transformedAnchors = new Point2D[EAnchors.values().length-1];
-		for (int i=0; i<EAnchors.values().length-1; i++) {
-			this.transformedAnchors[i] = new Point2D.Double();
-		}
 		this.dimension = new Dimension(WIDTH, HEIGHT);
 	}
 	
 	// methods
-	public boolean contains(int x, int y, Rectangle boundingRectangle, AffineTransform affineTransform) {
+	public boolean contains(int x, int y) {
 		Ellipse2D ellipse = new Ellipse2D.Double();
 		for (int i=0; i<EAnchors.values().length-1; i++) {
-			ellipse.setFrame(this.transformedAnchors[i], dimension);
+			ellipse.setFrame(this.anchors[i], dimension);
 			if (ellipse.contains(x, y)) {
 				this.eSelectedAnchor = EAnchors.values()[i];
 				return true;
@@ -67,7 +63,7 @@ public class TAnchors {
 		return false;
 	}
 	
-	public void draw(Graphics2D graphics2D, Rectangle boundingRectangle, AffineTransform affineTransform) {
+	public void draw(Graphics2D graphics2D, Rectangle boundingRectangle) {
 		
 		for (int i=0; i<EAnchors.values().length-1; i++) {
 			EAnchors eAnchor = EAnchors.values()[i];
@@ -92,10 +88,9 @@ public class TAnchors {
 			y = y-HEIGHT/2;
 
 			this.anchors[i].setLocation(x, y);
-			affineTransform.transform(this.anchors[i], this.transformedAnchors[i]);
 			
 			Ellipse2D ellipse = new Ellipse2D.Double();
-			ellipse.setFrame(this.transformedAnchors[i], dimension);
+			ellipse.setFrame(this.anchors[i], dimension);
 			
 			Color color = graphics2D.getColor();
 			graphics2D.setColor(graphics2D.getBackground());
