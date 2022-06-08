@@ -63,7 +63,6 @@ public class DrawingPanel extends JPanel {
 	public void initialize() {
 		this.bufferedImage = (BufferedImage) this.createImage(this.getWidth(), this.getHeight());
 		this.graphics2DBufferedImage = (Graphics2D) this.bufferedImage.getGraphics();
-		this.graphics2DBufferedImage.setXORMode(this.getBackground());
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -81,12 +80,13 @@ public class DrawingPanel extends JPanel {
 
 	// overriding
 	public void paint(Graphics graphics) {
-		super.paint(graphics);		
-//		this.graphics2DBufferedImage.clearRect(0, 0, 
-//				this.bufferedImage.getWidth(), this.bufferedImage.getHeight());
-//		for (TShape shape:this.shapes) {
-//			shape.draw(this.graphics2DBufferedImage);
-//		}		
+		super.paint(graphics);
+		
+		this.graphics2DBufferedImage.clearRect(0, 0, 
+				this.bufferedImage.getWidth(), this.bufferedImage.getHeight());
+		for (TShape shape:this.shapes) {
+			shape.draw(this.graphics2DBufferedImage);
+		}		
 		graphics.drawImage(this.bufferedImage, 0, 0, this);
 	}	
 	
@@ -111,16 +111,19 @@ public class DrawingPanel extends JPanel {
 			this.transformer = new Drawer(this.currentShape);
 		}
 		
-		this.transformer.prepare(x, y, this.graphics2DBufferedImage);
+		this.transformer.prepare(x, y);
+		this.graphics2DBufferedImage.setXORMode(this.getBackground());
 	}
 	
 	private void keepTransforming(int x, int y) {
 		// erase
 		this.currentShape.draw(this.graphics2DBufferedImage);
+		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
+		// transform
+		this.transformer.keepTransforming(x, y);
 		// draw
-		this.transformer.keepTransforming(x, y, this.graphics2DBufferedImage);
 		this.currentShape.draw(this.graphics2DBufferedImage);
-		this.repaint();
+		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
 	}
 	
 	private void continueTransforming(int x, int y) {
@@ -128,7 +131,8 @@ public class DrawingPanel extends JPanel {
 	}
 	
 	private void finishTransforming(int x, int y) {
-		this.transformer.finalize(x, y, this.graphics2DBufferedImage);
+		this.graphics2DBufferedImage.setPaintMode();
+		this.transformer.finalize(x, y);
 		
 		if (this.selectedShape!=null) {
 			this.selectedShape.setSelected(false);
@@ -190,7 +194,6 @@ public class DrawingPanel extends JPanel {
 				}
 			}
 		}
-		
 		this.setCursor(cursor);
 	}
 	

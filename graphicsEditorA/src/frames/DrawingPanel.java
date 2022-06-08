@@ -81,9 +81,12 @@ public class DrawingPanel extends JPanel {
 	// overriding
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
-//		for (TShape shape:this.shapes) {
-//			shape.draw((Graphics2D)graphics);
-//		}
+		
+		this.graphics2DBufferedImage.clearRect(0, 0, 
+				this.bufferedImage.getWidth(), this.bufferedImage.getHeight());
+		for (TShape shape:this.shapes) {
+			shape.draw(this.graphics2DBufferedImage);
+		}
 		graphics.drawImage(this.bufferedImage, 0, 0, this);
 	}	
 	
@@ -107,19 +110,20 @@ public class DrawingPanel extends JPanel {
 			this.currentShape = this.selectedTool.newShape();
 			this.transformer = new Drawer(this.currentShape);
 		}
-		
+
+		this.transformer.prepare(x, y);
 		this.graphics2DBufferedImage.setXORMode(this.getBackground());
-		this.transformer.prepare(x, y, this.graphics2DBufferedImage);
 	}
 	
 	private void keepTransforming(int x, int y) {
 		// erase
-		this.graphics2DBufferedImage.setXORMode(this.getBackground());
 		this.currentShape.draw(this.graphics2DBufferedImage);
+		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
 		// draw
-		this.transformer.keepTransforming(x, y, this.graphics2DBufferedImage);
+		this.transformer.keepTransforming(x, y);
 		this.currentShape.draw(this.graphics2DBufferedImage);
-		this.repaint();
+		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
+		
 	}
 	
 	private void continueTransforming(int x, int y) {
@@ -127,8 +131,8 @@ public class DrawingPanel extends JPanel {
 	}
 	
 	private void finishTransforming(int x, int y) {
-		this.graphics2DBufferedImage.setXORMode(this.getBackground());
-		this.transformer.finalize(x, y, this.graphics2DBufferedImage);
+		this.graphics2DBufferedImage.setPaintMode();
+		this.transformer.finalize(x, y);
 		
 		if (this.selectedShape!=null) {
 			this.selectedShape.setSelected(false);

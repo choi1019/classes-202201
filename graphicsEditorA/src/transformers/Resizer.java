@@ -1,10 +1,9 @@
 package transformers;
 
-import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
-import shapes.TShape;
 import shapes.TAnchors.EAnchors;
+import shapes.TShape;
 
 public class Resizer extends Transformer {
 	private double xScale, yScale;
@@ -15,7 +14,7 @@ public class Resizer extends Transformer {
 	}
 	
 	@Override
-	public void prepare(int x, int y, Graphics2D graphics2d) {
+	public void prepare(int x, int y) {
 		this.px = x;
 		this.py = y;
 		Point2D resizeAnchorPoint = this.anchors.getResizeAnchorPoint(x, y);
@@ -24,7 +23,7 @@ public class Resizer extends Transformer {
 	}
 	
 	@Override
-	public void keepTransforming(int x, int y, Graphics2D graphics2d) {
+	public void keepTransforming(int x, int y) {
 		this.getResizeScale(x, y);
 		this.affineTransform.translate(cx, cy);
 		this.affineTransform.scale(this.xScale, this.yScale);
@@ -33,7 +32,7 @@ public class Resizer extends Transformer {
 		this.py = y;
 	}
 	@Override
-	public void finalize(int x, int y, Graphics2D graphics2d) {
+	public void finalize(int x, int y) {
 	}
 	
 	protected void getResizeScale(int x, int y) {
