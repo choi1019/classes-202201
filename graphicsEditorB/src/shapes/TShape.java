@@ -44,7 +44,14 @@ abstract public class TShape implements Serializable {
 		this.affineTransform.setToIdentity();		
 		this.anchors = new TAnchors();
 	}
-	public abstract TShape clone();	
+	public abstract TShape clone();
+	
+	public double getCenterX() {
+		return this.shape.getBounds2D().getCenterX();
+	}
+	public double getCenterY() {
+		return this.shape.getBounds2D().getCenterY();
+	}
 	
 	// methods
 	public abstract void prepareDrawing(int x, int y);
@@ -72,5 +79,6 @@ abstract public class TShape implements Serializable {
 			this.anchors.draw(graphics2D, transformedShape.getBounds());			
 		}
 	}
+
 }
 

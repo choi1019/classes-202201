@@ -45,6 +45,13 @@ abstract public class TShape implements Serializable {
 	public abstract TShape clone();
 	public void initialize() {}
 	
+	public double getCenterX() {
+		return this.shape.getBounds2D().getCenterX();
+	}
+	public double getCenterY() {
+		return this.shape.getBounds2D().getCenterY();
+	}
+	
 	// methods
 	public boolean contains(int x, int y) {
 		Shape transformedShape = this.affineTransform.createTransformedShape(this.shape);
@@ -71,6 +78,8 @@ abstract public class TShape implements Serializable {
 	
 	public abstract void prepareDrawing(int x, int y);
 	public abstract void keepDrawing(int x, int y);
-	public void addPoint(int x, int y) {}	
+	public void addPoint(int x, int y) {}
+	
+
 }
 
