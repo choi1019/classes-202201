@@ -82,13 +82,17 @@ public class DrawingPanel extends JPanel {
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
 		
+		this.drawAll(graphics);
+	}
+	
+	public void drawAll(Graphics graphics) {
 		this.graphics2DBufferedImage.clearRect(0, 0, 
 				this.bufferedImage.getWidth(), this.bufferedImage.getHeight());
 		for (TShape shape:this.shapes) {
 			shape.draw(this.graphics2DBufferedImage);
 		}		
 		graphics.drawImage(this.bufferedImage, 0, 0, this);
-	}	
+	}
 	
 	private void prepareTransforming(int x, int y) {
 		if (selectedTool == ETools.eSelection) {
@@ -112,18 +116,22 @@ public class DrawingPanel extends JPanel {
 		}
 		
 		this.transformer.prepare(x, y);
-		this.graphics2DBufferedImage.setXORMode(this.getBackground());
+//		this.graphics2DBufferedImage.setXORMode(this.getBackground());
+//		this.drawAll(this.getGraphics());
+		this.repaint();
 	}
 	
 	private void keepTransforming(int x, int y) {
 		// erase
-		this.currentShape.draw(this.graphics2DBufferedImage);
-		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
+//		this.drawAll(this.getGraphics());
+//		this.currentShape.draw(this.graphics2DBufferedImage);
+//		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
 		// transform
 		this.transformer.keepTransforming(x, y);
 		// draw
-		this.currentShape.draw(this.graphics2DBufferedImage);
-		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
+//		this.currentShape.draw(this.graphics2DBufferedImage);
+//		this.getGraphics().drawImage(this.bufferedImage, 0, 0, this);
+		this.repaint();
 	}
 	
 	private void continueTransforming(int x, int y) {
@@ -131,7 +139,7 @@ public class DrawingPanel extends JPanel {
 	}
 	
 	private void finishTransforming(int x, int y) {
-		this.graphics2DBufferedImage.setPaintMode();
+//		this.graphics2DBufferedImage.setPaintMode();
 		this.transformer.finalize(x, y);
 		
 		if (this.selectedShape!=null) {
@@ -144,6 +152,7 @@ public class DrawingPanel extends JPanel {
 			this.selectedShape.setSelected(true);
 		}
 		
+//		this.drawAll(this.getGraphics());
 		this.repaint();
 	}	
 
@@ -155,6 +164,7 @@ public class DrawingPanel extends JPanel {
 		}
 		return null;
 	}
+	
 	private void changeSelection(int x, int y) {
 		if (this.selectedShape != null) {
 			this.selectedShape.setSelected(false);
@@ -240,6 +250,7 @@ public class DrawingPanel extends JPanel {
 		public void mousePressed(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdle) {
 				if (selectedTool.getTransformationStyle() == ETransformationStyle.e2PTransformation) {
+					changeSelection(e.getX(), e.getY());
 					prepareTransforming(e.getX(), e.getY());
 					eDrawingState = EDrawingState.e2PointDrawing;
 				}
